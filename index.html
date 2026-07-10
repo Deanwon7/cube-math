@@ -17,78 +17,133 @@
     height: 100%; padding: 10px; gap: 8px;
   }
   #topbar {
-    width: 100%; max-width: 920px;
+    width: 100%; max-width: 940px;
     display: flex; align-items: center; justify-content: space-between;
-    background: #4a3728;
-    border: 4px solid #2b1d14;
-    border-radius: 10px;
+    background: #4a3728; border: 4px solid #2b1d14; border-radius: 10px;
     box-shadow: 0 4px 0 #1c120c, 0 6px 10px rgba(0,0,0,0.25);
-    padding: 10px 16px;
-    color: #fff8e7;
+    padding: 10px 16px; color: #fff8e7;
   }
-  #topbar .title {
-    font-size: 18px; font-weight: 800; text-shadow: 2px 2px 0 #000;
-    letter-spacing: 1px;
-  }
+  #topbar .title { font-size: 18px; font-weight: 800; text-shadow: 2px 2px 0 #000; letter-spacing: 1px; }
   #topbar .counter {
-    font-size: 16px; font-weight: 700;
-    background: #2b1d14; padding: 6px 14px; border-radius: 8px;
-    border: 2px solid #6b4f3a;
+    font-size: 15px; font-weight: 700; background: #2b1d14;
+    padding: 6px 14px; border-radius: 8px; border: 2px solid #6b4f3a;
   }
-  #topbar .counter span {
-    color: #ffd93d; font-size: 20px; text-shadow: 1px 1px 0 #000;
-  }
+  #topbar .counter span { color: #ffd93d; font-size: 19px; text-shadow: 1px 1px 0 #000; }
   #resetBtn {
-    background: #d9534f; color: #fff; border: 3px solid #7a2c29;
-    border-radius: 8px; padding: 8px 14px; font-weight: 800; font-size: 13px;
-    cursor: pointer; box-shadow: 0 3px 0 #7a2c29;
-    transition: transform 0.05s;
+    background: #d9534f; color: #fff; border: 3px solid #7a2c29; border-radius: 8px;
+    padding: 8px 14px; font-weight: 800; font-size: 13px; cursor: pointer;
+    box-shadow: 0 3px 0 #7a2c29; transition: transform 0.05s;
   }
   #resetBtn:active { transform: translateY(3px); box-shadow: none; }
 
+  #mainArea { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 940px; width: 100%; }
+
   #canvasWrap {
     background: linear-gradient(180deg, #bfe8ff 0%, #eafcff 100%);
-    border: 5px solid #2b1d14;
-    border-radius: 14px;
+    border: 5px solid #2b1d14; border-radius: 14px;
     box-shadow: 0 6px 0 #1c120c, 0 10px 18px rgba(0,0,0,0.3), inset 0 0 40px rgba(255,255,255,0.4);
-    overflow: hidden;
+    overflow: hidden; flex-shrink: 0;
   }
   #gameCanvas { display: block; cursor: pointer; touch-action: none; }
 
-  #inventory {
-    width: 100%; max-width: 920px;
-    display: flex; justify-content: center; gap: 10px;
-    background: #4a3728;
-    border: 4px solid #2b1d14;
-    border-radius: 10px;
-    box-shadow: 0 4px 0 #1c120c, 0 6px 10px rgba(0,0,0,0.25);
-    padding: 10px;
+  #missionPanel {
+    width: 230px; background: #4a3728; border: 4px solid #2b1d14; border-radius: 14px;
+    box-shadow: 0 6px 0 #1c120c, 0 10px 18px rgba(0,0,0,0.3);
+    color: #fff8e7; padding: 14px; display: flex; flex-direction: column; gap: 10px;
   }
-  .tool {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  .missionHeader { font-size: 16px; font-weight: 800; text-shadow: 1px 1px 0 #000; border-bottom: 2px dashed #8a6a4d; padding-bottom: 8px; }
+  .missionDesc { font-size: 13px; line-height: 1.5; background: #2b1d14; padding: 10px; border-radius: 8px; border: 2px solid #6b4f3a; }
+  .missionTarget { font-size: 13px; font-weight: 700; color: #ffd93d; }
+  .missionProgress { font-size: 12px; background: #2b1d14; padding: 8px; border-radius: 8px; border: 2px solid #6b4f3a; line-height: 1.5; min-height: 54px; }
+  #skipMissionBtn {
+    background: #5b8dd6; color: #fff; border: 3px solid #2b4f7a; border-radius: 8px;
+    padding: 7px 10px; font-weight: 800; font-size: 12px; cursor: pointer; box-shadow: 0 3px 0 #2b4f7a;
+  }
+  #skipMissionBtn:active { transform: translateY(3px); box-shadow: none; }
+
+  #inventory {
+    width: 100%; max-width: 940px; display: flex; justify-content: center; gap: 10px;
+    background: #4a3728; border: 4px solid #2b1d14; border-radius: 10px;
+    box-shadow: 0 4px 0 #1c120c, 0 6px 10px rgba(0,0,0,0.25); padding: 10px;
+  }
+  .slot { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .tool-main {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px;
     background: #6b4f3a; border: 3px solid #2b1d14; border-radius: 10px;
     color: #fff8e7; font-size: 26px; padding: 8px 16px; cursor: pointer;
-    box-shadow: 0 3px 0 #2b1d14;
-    transition: transform 0.05s, background 0.15s;
+    box-shadow: 0 3px 0 #2b1d14; transition: transform 0.05s, background 0.15s;
   }
-  .tool span { font-size: 11px; font-weight: 700; }
-  .tool:active { transform: translateY(3px); box-shadow: none; }
-  .tool.active {
-    background: #ffd93d; color: #2b1d14;
-    box-shadow: 0 0 0 3px #fff, 0 3px 0 #b8860b;
+  .tool-main span { font-size: 11px; font-weight: 700; }
+  .tool-main:active { transform: translateY(3px); box-shadow: none; }
+  .tool-main.active { background: #ffd93d; color: #2b1d14; box-shadow: 0 0 0 3px #fff, 0 3px 0 #b8860b; }
+  .badge {
+    position: absolute; top: -8px; right: -8px; background: #ffd93d; color: #2b1d14;
+    font-size: 11px; font-weight: 800; border-radius: 999px; padding: 2px 6px;
+    border: 2px solid #2b1d14; min-width: 18px; text-align: center;
   }
+  #goldRechargeBtn {
+    background: #ffb347; color: #2b1d14; border: 2px solid #8a5a00; border-radius: 6px;
+    padding: 3px 8px; font-size: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 0 #8a5a00;
+  }
+  #goldRechargeBtn:active { transform: translateY(2px); box-shadow: none; }
 
   #hint {
     position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%);
     color: #3a2a1c; font-size: 12px; font-weight: 700;
-    background: rgba(255,255,255,0.7); padding: 4px 10px; border-radius: 8px;
-    pointer-events: none;
+    background: rgba(255,255,255,0.7); padding: 4px 10px; border-radius: 8px; pointer-events: none;
+    max-width: 90%; text-align: center; z-index: 5;
   }
 
-  @media (max-width: 700px) {
-    #topbar .title { font-size: 14px; }
-    #topbar .counter { font-size: 13px; padding: 5px 10px; }
-    .tool { padding: 6px 10px; font-size: 20px; }
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex;
+    align-items: center; justify-content: center; z-index: 50;
+  }
+  .overlay.hidden { display: none; }
+
+  .quizBox {
+    background: #fff8e7; border: 5px solid #2b1d14; border-radius: 16px; padding: 24px 28px;
+    text-align: center; min-width: 300px; max-width: 90vw; box-shadow: 0 8px 0 #1c120c;
+  }
+  .quizTitle { font-size: 16px; font-weight: 800; color: #8a5a00; margin-bottom: 10px; }
+  .quizQuestion { font-size: 32px; font-weight: 800; color: #2b1d14; margin: 10px 0 18px; }
+  .quizChoices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .quizChoiceBtn {
+    background: #ffd93d; border: 3px solid #b8860b; border-radius: 10px;
+    font-size: 20px; font-weight: 800; padding: 12px; cursor: pointer;
+    box-shadow: 0 3px 0 #b8860b; color: #2b1d14;
+  }
+  .quizChoiceBtn:active { transform: translateY(3px); box-shadow: none; }
+  .quizChoiceBtn.shake { animation: shake 0.4s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .quizFeedback { margin-top: 14px; font-size: 14px; font-weight: 700; min-height: 20px; }
+
+  .successBox {
+    background: #fff8e7; border: 5px solid #2b1d14; border-radius: 16px; padding: 28px 34px;
+    text-align: center; box-shadow: 0 8px 0 #1c120c;
+  }
+  .successEmoji { font-size: 40px; margin-bottom: 6px; }
+  .successTitle { font-size: 26px; font-weight: 800; color: #2e7d32; text-shadow: 1px 1px 0 #fff; }
+  .successSub { font-size: 15px; color: #3a2a1c; margin: 8px 0 18px; font-weight: 700; }
+  #nextMissionBtn {
+    background: #2e7d32; color: #fff; border: 3px solid #1b5e20; border-radius: 8px;
+    padding: 10px 20px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 3px 0 #1b5e20;
+  }
+  #nextMissionBtn:active { transform: translateY(3px); box-shadow: none; }
+
+  #confettiLayer { position: fixed; inset: 0; pointer-events: none; z-index: 60; overflow: hidden; }
+  .confetti { position: absolute; top: -20px; font-size: 22px; animation: fall linear forwards; }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(360deg); opacity: 0.9; }
+  }
+
+  @media (max-width: 760px) {
+    #topbar .title { font-size: 13px; }
+    #topbar .counter { font-size: 12px; padding: 5px 8px; }
+    .tool-main { padding: 6px 10px; font-size: 20px; }
+    #missionPanel { width: 100%; }
   }
 </style>
 </head>
@@ -101,19 +156,60 @@
     <button id="resetBtn">🔄 전체 지우기</button>
   </div>
 
-  <div id="canvasWrap">
-    <canvas id="gameCanvas" width="900" height="560"></canvas>
+  <div id="mainArea">
+    <div id="canvasWrap">
+      <canvas id="gameCanvas" width="680" height="560"></canvas>
+    </div>
+
+    <div id="missionPanel">
+      <div class="missionHeader">🎯 수학 미션</div>
+      <div class="missionDesc" id="missionDesc">불러오는 중...</div>
+      <div class="missionTarget" id="missionTarget"></div>
+      <div class="missionProgress" id="missionProgress"></div>
+      <button id="skipMissionBtn">🔀 다른 미션 보기</button>
+    </div>
   </div>
 
   <div id="inventory">
-    <button class="tool active" data-tool="dirt" title="흙 블록">🟫<span>흙 블록</span></button>
-    <button class="tool" data-tool="stone" title="석재 블록">⬜<span>석재 블록</span></button>
-    <button class="tool" data-tool="gold" title="황금 블록">🟨<span>황금 블록</span></button>
-    <button class="tool" data-tool="pickaxe" title="곡괭이 (삭제)">⛏️<span>곡괭이</span></button>
+    <div class="slot">
+      <button class="tool-main active" data-tool="dirt" title="흙 블록">🟫<span>흙 블록</span></button>
+    </div>
+    <div class="slot">
+      <button class="tool-main" data-tool="stone" title="석재 블록">⬜<span>석재 블록</span></button>
+    </div>
+    <div class="slot">
+      <button class="tool-main" data-tool="gold" title="황금 블록">🟨<span>황금 블록</span><span class="badge" id="goldBadge">0</span></button>
+      <button id="goldRechargeBtn">🧮 퀴즈로 충전</button>
+    </div>
+    <div class="slot">
+      <button class="tool-main" data-tool="pickaxe" title="곡괭이 (삭제)">⛏️<span>곡괭이</span></button>
+    </div>
   </div>
 </div>
 
-<div id="hint">💡 격자를 클릭해서 블록을 쌓아보세요! (곡괭이를 선택하면 블록을 없앨 수 있어요)</div>
+<div id="hint">💡 격자를 클릭해서 블록을 쌓아보세요!</div>
+
+<!-- 황금 블록 퀴즈 -->
+<div id="quizOverlay" class="overlay hidden">
+  <div class="quizBox">
+    <div class="quizTitle">🌟 황금 블록 획득 퀴즈!</div>
+    <div class="quizQuestion" id="quizQuestion">6 × 7 = ?</div>
+    <div class="quizChoices" id="quizChoices"></div>
+    <div class="quizFeedback" id="quizFeedback"></div>
+  </div>
+</div>
+
+<!-- 미션 성공 -->
+<div id="successOverlay" class="overlay hidden">
+  <div class="successBox">
+    <div class="successEmoji">🎉🏆🎉</div>
+    <div class="successTitle">미션 완료!</div>
+    <div class="successSub" id="successSub">성공적인 건축가예요!</div>
+    <button id="nextMissionBtn">다음 미션 ▶</button>
+  </div>
+</div>
+
+<div id="confettiLayer"></div>
 
 <script>
 (function(){
@@ -121,135 +217,97 @@
   const ctx = canvas.getContext('2d');
   const blockCountEl = document.getElementById('blockCount');
 
-  // ---------- 설정값 ----------
-  const GRID_SIZE = 8;          // 8 x 8 바닥 격자
-  const MAX_HEIGHT = 8;         // 한 칸에 최대 8층까지 쌓기 가능
-  const TILE_W = 64;            // 타일 가로 폭
-  const TILE_H = 32;            // 타일 세로 폭 (아이소메트릭 다이아몬드)
-  const HALF_W = TILE_W / 2;
-  const HALF_H = TILE_H / 2;
-  const CUBE_HEIGHT = 34;       // 큐브 한 칸의 높이(옆면 길이)
+  // ---------- 기본 설정값 ----------
+  const GRID_SIZE = 8;
+  const MAX_HEIGHT = 8;
+  const TILE_W = 64, TILE_H = 32;
+  const HALF_W = TILE_W / 2, HALF_H = TILE_H / 2;
+  const CUBE_HEIGHT = 34;
   const ORIGIN_X = canvas.width / 2;
-  const ORIGIN_Y = 90;
+  const ORIGIN_Y = 70;
 
-  // 블록 타입별 색상 (top, right면, left면)
   const BLOCK_COLORS = {
     dirt:  { top: '#9c6b3e', right: '#7a5230', left: '#5c3e24', outline: '#3f2a18' },
     stone: { top: '#b7b7b7', right: '#8f8f8f', left: '#6e6e6e', outline: '#4a4a4a' },
     gold:  { top: '#ffe066', right: '#f2b705', left: '#c98a00', outline: '#8a5a00' }
   };
 
-  // grid[gx][gy] = ['dirt','stone', ...] (아래에서부터 쌓인 순서)
   let grid = [];
-  for (let x = 0; x < GRID_SIZE; x++) {
-    grid.push(new Array(GRID_SIZE).fill(null).map(() => []));
-  }
+  for (let x = 0; x < GRID_SIZE; x++) grid.push(new Array(GRID_SIZE).fill(null).map(() => []));
 
-  let currentTool = 'dirt'; // dirt | stone | gold | pickaxe
-  let hoverCell = null;     // { gx, gy }
+  let currentTool = 'dirt';
+  let hoverCell = null;
+  let goldStock = 0;
 
-  // ---------- 좌표 변환 ----------
+  // ---------- 좌표 변환 (아이소메트릭) ----------
   function tileApex(gx, gy, z) {
-    // z: 해당 칸의 "쌓인 층 수" (표면 높이). 반환값은 표면 다이아몬드의 꼭짓점(위쪽 점) 좌표.
     const sx = ORIGIN_X + (gx - gy) * HALF_W;
     const sy = ORIGIN_Y + (gx + gy) * HALF_H - z * CUBE_HEIGHT;
     return { x: sx, y: sy };
   }
-
   function topFacePoly(gx, gy, z) {
     const p = tileApex(gx, gy, z);
-    return [
-      [p.x, p.y],
-      [p.x + HALF_W, p.y + HALF_H],
-      [p.x, p.y + TILE_H],
-      [p.x - HALF_W, p.y + HALF_H]
-    ];
+    return [[p.x, p.y], [p.x + HALF_W, p.y + HALF_H], [p.x, p.y + TILE_H], [p.x - HALF_W, p.y + HALF_H]];
   }
-
   function leftFacePoly(gx, gy, z) {
     const p = tileApex(gx, gy, z);
-    const bx = p.x, by = p.y + TILE_H;
-    const lx = p.x - HALF_W, ly = p.y + HALF_H;
-    return [
-      [lx, ly], [bx, by],
-      [bx, by + CUBE_HEIGHT], [lx, ly + CUBE_HEIGHT]
-    ];
+    const bx = p.x, by = p.y + TILE_H, lx = p.x - HALF_W, ly = p.y + HALF_H;
+    return [[lx, ly], [bx, by], [bx, by + CUBE_HEIGHT], [lx, ly + CUBE_HEIGHT]];
   }
-
   function rightFacePoly(gx, gy, z) {
     const p = tileApex(gx, gy, z);
-    const bx = p.x, by = p.y + TILE_H;
-    const rx = p.x + HALF_W, ry = p.y + HALF_H;
-    return [
-      [bx, by], [rx, ry],
-      [rx, ry + CUBE_HEIGHT], [bx, by + CUBE_HEIGHT]
-    ];
+    const bx = p.x, by = p.y + TILE_H, rx = p.x + HALF_W, ry = p.y + HALF_H;
+    return [[bx, by], [rx, ry], [rx, ry + CUBE_HEIGHT], [bx, by + CUBE_HEIGHT]];
   }
-
   function pointInPoly(poly, px, py) {
     let inside = false;
     for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-      const xi = poly[i][0], yi = poly[i][1];
-      const xj = poly[j][0], yj = poly[j][1];
-      const intersect = ((yi > py) !== (yj > py)) &&
-        (px < (xj - xi) * (py - yi) / (yj - yi + 0.00001) + xi);
+      const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+      const intersect = ((yi > py) !== (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi + 0.00001) + xi);
       if (intersect) inside = !inside;
     }
     return inside;
   }
-
   function drawPoly(poly, fillColor, strokeColor) {
     ctx.beginPath();
     ctx.moveTo(poly[0][0], poly[0][1]);
     for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i][0], poly[i][1]);
     ctx.closePath();
-    ctx.fillStyle = fillColor;
-    ctx.fill();
+    ctx.fillStyle = fillColor; ctx.fill();
     if (strokeColor) { ctx.strokeStyle = strokeColor; ctx.lineWidth = 1.5; ctx.stroke(); }
   }
 
   // ---------- 렌더링 ----------
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     for (let sum = 0; sum <= (GRID_SIZE - 1) * 2; sum++) {
       for (let gx = 0; gx < GRID_SIZE; gx++) {
         const gy = sum - gx;
         if (gy < 0 || gy >= GRID_SIZE) continue;
 
-        // 바닥 타일(잔디) 그리기
         const groundPoly = topFacePoly(gx, gy, 0);
         const isHoverGround = hoverCell && hoverCell.gx === gx && hoverCell.gy === gy && grid[gx][gy].length === 0;
         drawPoly(groundPoly, isHoverGround ? '#8fe08f' : '#7bc47f', '#5a9c5e');
 
-        // 쌓인 블록들 그리기
         const stack = grid[gx][gy];
         for (let i = 0; i < stack.length; i++) {
-          const type = stack[i];
-          const colors = BLOCK_COLORS[type];
+          const colors = BLOCK_COLORS[stack[i]];
           const zTop = i + 1;
           drawPoly(leftFacePoly(gx, gy, zTop), colors.left, colors.outline);
           drawPoly(rightFacePoly(gx, gy, zTop), colors.right, colors.outline);
-          if (i === stack.length - 1) {
-            drawPoly(topFacePoly(gx, gy, zTop), colors.top, colors.outline);
-          }
+          if (i === stack.length - 1) drawPoly(topFacePoly(gx, gy, zTop), colors.top, colors.outline);
         }
 
-        // 호버 미리보기 (반투명 블록)
         if (hoverCell && hoverCell.gx === gx && hoverCell.gy === gy) {
           const h = stack.length;
           if (currentTool === 'pickaxe') {
-            if (h > 0) {
-              ctx.globalAlpha = 0.55;
-              drawPoly(topFacePoly(gx, gy, h), '#ff5555', '#aa0000');
-              ctx.globalAlpha = 1;
-            }
+            if (h > 0) { ctx.globalAlpha = 0.55; drawPoly(topFacePoly(gx, gy, h), '#ff5555', '#aa0000'); ctx.globalAlpha = 1; }
           } else if (h < MAX_HEIGHT) {
-            const previewColors = BLOCK_COLORS[currentTool];
+            const c = BLOCK_COLORS[currentTool];
             ctx.globalAlpha = 0.5;
-            drawPoly(leftFacePoly(gx, gy, h + 1), previewColors.left, previewColors.outline);
-            drawPoly(rightFacePoly(gx, gy, h + 1), previewColors.right, previewColors.outline);
-            drawPoly(topFacePoly(gx, gy, h + 1), previewColors.top, previewColors.outline);
+            drawPoly(leftFacePoly(gx, gy, h + 1), c.left, c.outline);
+            drawPoly(rightFacePoly(gx, gy, h + 1), c.right, c.outline);
+            drawPoly(topFacePoly(gx, gy, h + 1), c.top, c.outline);
             ctx.globalAlpha = 1;
           }
         }
@@ -257,16 +315,12 @@
     }
   }
 
-  // ---------- 총 블록 개수 계산 ----------
   function updateCount() {
     let total = 0;
-    for (let x = 0; x < GRID_SIZE; x++)
-      for (let y = 0; y < GRID_SIZE; y++)
-        total += grid[x][y].length;
+    for (let x = 0; x < GRID_SIZE; x++) for (let y = 0; y < GRID_SIZE; y++) total += grid[x][y].length;
     blockCountEl.textContent = total;
   }
 
-  // ---------- 클릭한 칸 찾기 (앞쪽 칸부터 우선 검사) ----------
   function findCellAt(px, py) {
     for (let sum = (GRID_SIZE - 1) * 2; sum >= 0; sum--) {
       for (let gx = GRID_SIZE - 1; gx >= 0; gx--) {
@@ -274,7 +328,6 @@
         if (gy < 0 || gy >= GRID_SIZE) continue;
         const stack = grid[gx][gy];
         const h = stack.length;
-
         if (h > 0) {
           if (pointInPoly(topFacePoly(gx, gy, h), px, py)) return { gx, gy };
           if (pointInPoly(leftFacePoly(gx, gy, h), px, py)) return { gx, gy };
@@ -291,20 +344,14 @@
     const rect = canvas.getBoundingClientRect();
     const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
     const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    return { x: (clientX - rect.left) * (canvas.width / rect.width), y: (clientY - rect.top) * (canvas.height / rect.height) };
   }
 
   function spawnPuffEffect(gx, gy, z) {
-    // 간단한 파티클 없이도 살짝 느낌을 주는 플래시 효과
     const p = tileApex(gx, gy, z);
     let frame = 0;
     const particles = Array.from({ length: 8 }, (_, i) => ({
-      x: p.x, y: p.y,
-      vx: Math.cos((i / 8) * Math.PI * 2) * 2,
-      vy: Math.sin((i / 8) * Math.PI * 2) * 2 - 1,
-      life: 20
+      x: p.x, y: p.y, vx: Math.cos((i / 8) * Math.PI * 2) * 2, vy: Math.sin((i / 8) * Math.PI * 2) * 2 - 1, life: 20
     }));
     function step() {
       render();
@@ -313,9 +360,7 @@
         pt.x += pt.vx; pt.y += pt.vy; pt.vy += 0.15; pt.life--;
         ctx.globalAlpha = Math.max(pt.life / 20, 0);
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(pt.x, pt.y, 3, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(pt.x, pt.y, 3, 0, Math.PI * 2); ctx.fill();
         ctx.globalAlpha = 1;
       });
       frame++;
@@ -323,6 +368,34 @@
     }
     step();
   }
+
+  // ---------- 힌트 ----------
+  const hintEl = document.getElementById('hint');
+  let hintTimer = null;
+  const DEFAULT_HINT = '💡 격자를 클릭해서 블록을 쌓아보세요!';
+  function flashHint(msg) {
+    hintEl.textContent = '💡 ' + msg;
+    hintEl.style.background = 'rgba(255, 220, 150, 0.95)';
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => { hintEl.textContent = DEFAULT_HINT; hintEl.style.background = 'rgba(255,255,255,0.7)'; }, 2400);
+  }
+
+  // ---------- 도구 선택 ----------
+  function selectTool(tool) {
+    currentTool = tool;
+    document.querySelectorAll('.tool-main').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
+    render();
+  }
+  function updateGoldBadge() { document.getElementById('goldBadge').textContent = goldStock; }
+
+  document.querySelectorAll('.tool-main').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tool = btn.dataset.tool;
+      if (tool === 'gold' && goldStock <= 0) { openGoldQuiz(); return; }
+      selectTool(tool);
+    });
+  });
+  document.getElementById('goldRechargeBtn').addEventListener('click', openGoldQuiz);
 
   // ---------- 상호작용 ----------
   function handleClick(evt) {
@@ -334,39 +407,28 @@
     const stack = grid[gx][gy];
 
     if (currentTool === 'pickaxe') {
-      if (stack.length > 0) {
-        stack.pop();
-        updateCount();
-        render();
-      }
+      if (stack.length > 0) { stack.pop(); updateCount(); render(); evaluateMission(); }
+      return;
+    }
+
+    if (currentTool === 'gold' && goldStock <= 0) { flashHint('황금 블록 재고가 없어요! 퀴즈를 풀어볼까요?'); openGoldQuiz(); return; }
+
+    if (stack.length < MAX_HEIGHT) {
+      stack.push(currentTool);
+      if (currentTool === 'gold') { goldStock--; updateGoldBadge(); }
+      updateCount();
+      spawnPuffEffect(gx, gy, stack.length);
+      evaluateMission();
     } else {
-      if (stack.length < MAX_HEIGHT) {
-        stack.push(currentTool);
-        updateCount();
-        spawnPuffEffect(gx, gy, stack.length);
-      } else {
-        flashHint('여기는 더 이상 높이 쌓을 수 없어요! 다른 칸에 쌓아볼까요?');
-      }
+      flashHint('여기는 더 이상 높이 쌓을 수 없어요! 다른 칸에 쌓아볼까요?');
     }
   }
 
   function handleMove(evt) {
     const pos = getCanvasPos(evt);
-    const cell = findCellAt(pos.x, pos.y);
-    hoverCell = cell;
+    hoverCell = findCellAt(pos.x, pos.y);
     render();
-  }
-
-  const hintEl = document.getElementById('hint');
-  let hintTimer = null;
-  function flashHint(msg) {
-    hintEl.textContent = '💡 ' + msg;
-    hintEl.style.background = 'rgba(255, 220, 150, 0.95)';
-    clearTimeout(hintTimer);
-    hintTimer = setTimeout(() => {
-      hintEl.textContent = '💡 격자를 클릭해서 블록을 쌓아보세요! (곡괭이를 선택하면 블록을 없앨 수 있어요)';
-      hintEl.style.background = 'rgba(255,255,255,0.7)';
-    }, 2200);
+    updateMissionProgressDisplay();
   }
 
   canvas.addEventListener('click', handleClick);
@@ -375,27 +437,176 @@
   canvas.addEventListener('touchstart', (e) => { handleMove(e); }, { passive: false });
   canvas.addEventListener('touchend', (e) => { handleClick(e); }, { passive: false });
 
-  // ---------- 인벤토리 도구 선택 ----------
-  document.querySelectorAll('.tool').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tool').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentTool = btn.dataset.tool;
-      render();
-    });
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    for (let x = 0; x < GRID_SIZE; x++) for (let y = 0; y < GRID_SIZE; y++) grid[x][y] = [];
+    updateCount(); render(); missionLocked = false; updateMissionPanel();
   });
 
-  // ---------- 전체 지우기 ----------
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    for (let x = 0; x < GRID_SIZE; x++)
-      for (let y = 0; y < GRID_SIZE; y++)
-        grid[x][y] = [];
-    updateCount();
-    render();
+  // ============================================================
+  //  미션 시스템 (부피 판정)
+  // ============================================================
+  const MISSIONS = [
+    { w: 2, d: 2, h: 2, label: '작은 오두막' },
+    { w: 3, d: 2, h: 2, label: '비밀 기지' },
+    { w: 2, d: 2, h: 3, label: '높은 감시탑' },
+    { w: 3, d: 3, h: 2, label: '넓은 창고' },
+    { w: 4, d: 2, h: 2, label: '긴 다리 기지' },
+    { w: 3, d: 2, h: 3, label: '튼튼한 성벽' }
+  ];
+  let missionIndex = 0;
+  let missionLocked = false;
+  function currentMission() { return MISSIONS[missionIndex % MISSIONS.length]; }
+
+  function getStructureStats() {
+    let minX = null, maxX = null, minY = null, maxY = null;
+    for (let x = 0; x < GRID_SIZE; x++) {
+      for (let y = 0; y < GRID_SIZE; y++) {
+        if (grid[x][y].length > 0) {
+          if (minX === null || x < minX) minX = x;
+          if (maxX === null || x > maxX) maxX = x;
+          if (minY === null || y < minY) minY = y;
+          if (maxY === null || y > maxY) maxY = y;
+        }
+      }
+    }
+    if (minX === null) return null;
+    const width = maxX - minX + 1, depth = maxY - minY + 1;
+    let maxH = 0, uniform = true, firstH = null;
+    for (let x = minX; x <= maxX; x++) {
+      for (let y = minY; y <= maxY; y++) {
+        const h = grid[x][y].length;
+        if (h > maxH) maxH = h;
+        if (firstH === null) firstH = h; else if (h !== firstH) uniform = false;
+      }
+    }
+    return { minX, maxX, minY, maxY, width, depth, maxHeight: maxH, uniformHeight: uniform ? firstH : null };
+  }
+
+  function checkMissionComplete(mission) {
+    const stats = getStructureStats();
+    if (!stats) return false;
+    const matchNormal = stats.width === mission.w && stats.depth === mission.d;
+    const matchRotated = stats.width === mission.d && stats.depth === mission.w;
+    if (!matchNormal && !matchRotated) return false;
+    return stats.uniformHeight === mission.h;
+  }
+
+  function evaluateMission() {
+    updateMissionProgressDisplay();
+    if (missionLocked) return;
+    if (checkMissionComplete(currentMission())) { missionLocked = true; showMissionSuccess(); }
+  }
+
+  function updateMissionPanel() {
+    const m = currentMission();
+    document.getElementById('missionDesc').textContent =
+      `"${m.label}" — 가로 ${m.w}칸 × 세로 ${m.d}칸 × 높이 ${m.h}칸짜리 구조물을 만들어보세요!`;
+    document.getElementById('missionTarget').textContent = `필요한 총 블록 개수: ${m.w * m.d * m.h}개`;
+    updateMissionProgressDisplay();
+  }
+
+  function updateMissionProgressDisplay() {
+    const stats = getStructureStats();
+    const el = document.getElementById('missionProgress');
+    if (!stats) { el.textContent = '아직 아무것도 만들지 않았어요. 격자를 클릭해서 시작해보세요!'; return; }
+    const h = stats.uniformHeight === null ? `${stats.maxHeight} (울퉁불퉁)` : stats.uniformHeight;
+    const total = (() => { let t = 0; for (let x = stats.minX; x <= stats.maxX; x++) for (let y = stats.minY; y <= stats.maxY; y++) t += grid[x][y].length; return t; })();
+    el.textContent = `현재 구조: 가로 ${stats.width}칸 × 세로 ${stats.depth}칸 × 높이 ${h}칸 (${total}개 사용)`;
+  }
+
+  function showMissionSuccess() {
+    const m = currentMission();
+    document.getElementById('successSub').textContent = `"${m.label}" 미션 성공! 정말 대단한 건축가예요!`;
+    document.getElementById('successOverlay').classList.remove('hidden');
+    launchConfetti();
+  }
+
+  document.getElementById('nextMissionBtn').addEventListener('click', () => {
+    document.getElementById('successOverlay').classList.add('hidden');
+    missionIndex++; missionLocked = false; updateMissionPanel();
   });
+  document.getElementById('skipMissionBtn').addEventListener('click', () => {
+    missionIndex++; missionLocked = false; updateMissionPanel();
+  });
+
+  function launchConfetti() {
+    const layer = document.getElementById('confettiLayer');
+    const emojis = ['🎉', '✨', '⭐', '🎊', '🏆'];
+    for (let i = 0; i < 30; i++) {
+      const span = document.createElement('span');
+      span.className = 'confetti';
+      span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      span.style.left = Math.random() * 100 + 'vw';
+      span.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+      span.style.fontSize = (16 + Math.random() * 14) + 'px';
+      layer.appendChild(span);
+      setTimeout(() => span.remove(), 4000);
+    }
+  }
+
+  // ============================================================
+  //  황금 블록 연산 퀴즈
+  // ============================================================
+  let currentQuizAnswer = null;
+  function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+
+  function openGoldQuiz() {
+    const ops = ['+', '-', '×'];
+    const op = ops[rand(0, 2)];
+    let a, b, answer;
+    if (op === '+') { a = rand(2, 15); b = rand(2, 15); answer = a + b; }
+    else if (op === '-') { a = rand(6, 20); b = rand(1, a - 1); answer = a - b; }
+    else { a = rand(2, 9); b = rand(2, 9); answer = a * b; }
+
+    currentQuizAnswer = answer;
+    document.getElementById('quizQuestion').textContent = `${a} ${op} ${b} = ?`;
+    const choices = generateChoices(answer);
+    const choicesEl = document.getElementById('quizChoices');
+    choicesEl.innerHTML = '';
+    choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'quizChoiceBtn';
+      btn.textContent = c;
+      btn.addEventListener('click', () => handleQuizAnswer(c, btn));
+      choicesEl.appendChild(btn);
+    });
+    document.getElementById('quizFeedback').textContent = '';
+    document.getElementById('quizOverlay').classList.remove('hidden');
+  }
+
+  function generateChoices(answer) {
+    const set = new Set([answer]);
+    let guard = 0;
+    while (set.size < 4 && guard < 50) {
+      guard++;
+      const delta = rand(-6, 6);
+      const val = answer + delta;
+      if (val > 0 && !set.has(val)) set.add(val);
+    }
+    return shuffle(Array.from(set));
+  }
+
+  function handleQuizAnswer(val, btn) {
+    const fb = document.getElementById('quizFeedback');
+    if (val === currentQuizAnswer) {
+      fb.textContent = `🎉 정답이에요! 황금 블록 ${val}개 획득!`;
+      fb.style.color = '#2e7d32';
+      goldStock += val;
+      updateGoldBadge();
+      setTimeout(() => { document.getElementById('quizOverlay').classList.add('hidden'); selectTool('gold'); }, 1100);
+    } else {
+      fb.textContent = '다시 한번 생각해봐요! 손가락으로 세어볼까요? 🤔';
+      fb.style.color = '#c0392b';
+      btn.classList.add('shake');
+      setTimeout(() => btn.classList.remove('shake'), 400);
+    }
+  }
 
   // ---------- 초기 실행 ----------
   updateCount();
+  updateGoldBadge();
+  updateMissionPanel();
   render();
 })();
 </script>
