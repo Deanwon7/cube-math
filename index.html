@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-<title>🧱 Jihoon 큐브 매스: 마스터 빌더 에디션 (Cube Math: Master Builder Edition)</title>
+<title>🧱 큐브 매스: 마스터 빌더 에디션 (고정밀 터치 패치)</title>
 <style>
-  /* --- 디자인 시스템 & 글로벌 스타일 --- */
   :root {
     --bg-main: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
     --panel-bg: rgba(44, 62, 80, 0.95);
@@ -36,9 +35,9 @@
     background: var(--bg-main);
     font-family: var(--font-family);
     color: var(--text-light);
+    touch-action: none; /* 브라우저 기본 줌/스크롤 강제 무효화 */
   }
 
-  /* --- 메인 애플리케이션 레이아웃 --- */
   #app-container {
     display: flex;
     flex-direction: column;
@@ -47,7 +46,6 @@
     position: relative;
   }
 
-  /* 최상단 스코어 및 컨트롤 바 */
   #header-viewport {
     height: 60px;
     background: var(--panel-bg);
@@ -67,7 +65,6 @@
     gap: 8px;
     font-size: 18px;
     font-weight: 900;
-    letter-spacing: -0.5px;
     color: var(--accent-gold);
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
@@ -85,9 +82,6 @@
     font-size: 13px;
     font-weight: 700;
     border: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    align-items: center;
-    gap: 6px;
   }
 
   .stat-badge span {
@@ -106,14 +100,12 @@
     font-weight: 800;
     cursor: pointer;
     box-shadow: 0 4px 0 #c0392b;
-    transition: all 0.1s ease;
   }
   .header-btn:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 #c0392b;
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #c0392b;
   }
 
-  /* 메인 작업 영역 구조 */
   #workspace-viewport {
     flex: 1;
     display: flex;
@@ -122,7 +114,6 @@
     width: 100%;
   }
 
-  /* 캔버스 렌더러 스페이스 */
   #renderer-container {
     flex: 1;
     height: 100%;
@@ -135,13 +126,8 @@
     display: block;
     width: 100%;
     height: 100%;
-    cursor: grab;
-  }
-  #game-renderer:active {
-    cursor: grabbing;
   }
 
-  /* --- 우측 가로/세로 하이브리드 프로 핫바 (인벤토리) --- */
   #hotbar-viewport {
     position: absolute;
     right: 20px;
@@ -188,45 +174,17 @@
     border: 3px solid #2c3e50;
     border-radius: 14px;
     cursor: pointer;
-    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s;
-  }
-  .item-slot:hover {
-    background: #3e566f;
+    transition: transform 0.1s ease;
   }
   .item-slot.active {
     background: #222f3e;
     border-color: var(--accent-gold);
-    transform: scale(1.05);
-    box-shadow: 0 0 12px rgba(241, 196, 15, 0.4);
-  }
-  .item-slot.active::after {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border: 2px solid white;
-    border-radius: 14px;
-    animation: pulse-border 1.5s infinite;
+    transform: scale(1.03);
   }
 
-  @keyframes pulse-border {
-    0% { opacity: 0.3; }
-    50% { opacity: 1; }
-    100% { opacity: 0.3; }
-  }
-
-  .item-icon {
-    font-size: 26px;
-    margin-bottom: 2px;
-  }
-
-  .item-label {
-    font-size: 10px;
-    font-weight: 800;
-    color: #c8d6e5;
-  }
-  .item-slot.active .item-label {
-    color: var(--accent-gold);
-  }
+  .item-icon { font-size: 26px; margin-bottom: 2px; }
+  .item-label { font-size: 10px; font-weight: 800; color: #c8d6e5; }
+  .item-slot.active .item-label { color: var(--accent-gold); }
 
   .slot-badge {
     position: absolute;
@@ -239,7 +197,6 @@
     padding: 2px 6px;
     border-radius: 10px;
     border: 2px solid var(--panel-border);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   }
 
   .recharge-action-btn {
@@ -255,12 +212,7 @@
     margin-top: 4px;
     box-shadow: 0 2px 0 #d35400;
   }
-  .recharge-action-btn:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 0 #d35400;
-  }
 
-  /* --- 좌측 상단 플로팅 대시보드 (수학 미션) --- */
   #mission-dashboard {
     position: absolute;
     left: 20px;
@@ -286,250 +238,47 @@
     padding-bottom: 6px;
   }
 
-  .mission-tag {
-    background: #2980b9;
-    font-size: 11px;
-    font-weight: 900;
-    padding: 3px 8px;
-    border-radius: 6px;
-    letter-spacing: 0.5px;
-  }
-
-  .mission-skip {
-    background: transparent;
-    border: 1px solid #7f8c8d;
-    color: #bdc3c7;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .mission-skip:hover {
-    background: rgba(255,255,255,0.1);
-    color: white;
-  }
-
-  .mission-title {
-    font-size: 14px;
-    font-weight: 800;
-    line-height: 1.4;
-    color: #fff;
-  }
+  .mission-tag { background: #2980b9; font-size: 11px; font-weight: 900; padding: 3px 8px; border-radius: 6px; }
+  .mission-skip { background: transparent; border: 1px solid #7f8c8d; color: #bdc3c7; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; cursor: pointer; }
+  .mission-title { font-size: 14px; font-weight: 800; color: #fff; }
 
   .mission-formula-card {
-    background: rgba(0,0,0,0.3);
-    border-radius: 10px;
-    padding: 8px 12px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--accent-gold);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    background: rgba(0,0,0,0.3); border-radius: 10px; padding: 8px 12px; font-size: 12px; font-weight: 700; color: var(--accent-gold); display: flex; align-items: center; gap: 6px;
   }
 
-  .mission-tracker {
-    background: #222f3e;
-    border-radius: 10px;
-    padding: 10px;
-    font-size: 12px;
-    border-left: 4px solid var(--accent-green);
-  }
-  .tracker-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-  }
-  .tracker-row:last-child { margin-bottom: 0; }
+  .mission-tracker { background: #222f3e; border-radius: 10px; padding: 10px; font-size: 12px; border-left: 4px solid var(--accent-green); }
+  .tracker-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
   .tracker-label { color: #8a97a5; font-weight: 700; }
   .tracker-value { font-weight: 800; color: #fff; }
 
-  /* 하단 중앙 가이드 힌트 */
   #system-toast {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    padding: 8px 20px;
-    border-radius: 30px;
-    font-size: 12px;
-    font-weight: 700;
-    pointer-events: none;
-    z-index: 20;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.1);
-    transition: opacity 0.3s, transform 0.3s;
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: #fff; padding: 8px 20px; border-radius: 30px; font-size: 12px; font-weight: 700; pointer-events: none; z-index: 20; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); opacity: 0; transition: opacity 0.3s, transform 0.3s;
   }
 
-  /* --- 대화형 풀스크린 모달 시스템 --- */
-  .modal-screen {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(6px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    opacity: 1;
-    transition: opacity 0.25s ease;
-  }
-  .modal-screen.hidden {
-    display: none;
-    opacity: 0;
-  }
+  .modal-screen { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 100; }
+  .modal-screen.hidden { display: none; }
+  .dialog-card { background: #fff8e7; border: 5px solid var(--panel-border); border-radius: 24px; padding: 30px; width: 340px; text-align: center; color: var(--text-dark); }
+  .quiz-category { font-size: 12px; font-weight: 900; color: var(--accent-orange); }
+  .quiz-expression { font-size: 36px; font-weight: 900; margin: 15px 0; color: #1e272e; }
+  .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+  .quiz-btn { background: #fff; border: 3px solid #dcdde1; border-radius: 14px; padding: 14px; font-size: 20px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 0 #dcdde1; }
+  .quiz-btn.correct-feedback { background: var(--accent-green) !important; border-color: #27ae60 !important; color: white !important; box-shadow: 0 4px 0 #27ae60 !important; }
+  #quiz-status-msg { margin-top: 15px; font-size: 13px; font-weight: 800; min-height: 20px; color: var(--accent-red); }
 
-  .dialog-card {
-    background: #fff8e7;
-    border: 5px solid var(--panel-border);
-    border-radius: 24px;
-    padding: 30px;
-    width: 340px;
-    max-width: 90%;
-    text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    color: var(--text-dark);
-    transform: scale(1);
-    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .modal-screen.hidden .dialog-card {
-    transform: scale(0.8);
-  }
+  .celebrate-icon { font-size: 50px; }
+  .success-header { font-size: 24px; font-weight: 900; color: var(--accent-green); margin: 10px 0; }
+  .success-summary { font-size: 13px; font-weight: 700; color: #57606f; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; margin: 15px 0; line-height: 1.5; }
+  .primary-action-btn { background: var(--accent-green); color: white; border: none; border-radius: 12px; padding: 12px 30px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 5px 0 #27ae60; width: 100%; }
 
-  .quiz-category {
-    font-size: 12px;
-    font-weight: 900;
-    color: var(--accent-orange);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .quiz-expression {
-    font-size: 36px;
-    font-weight: 900;
-    margin: 15px 0;
-    color: #1e272e;
-    letter-spacing: -1px;
-  }
-
-  .quiz-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 20px;
-  }
-  .quiz-btn {
-    background: #fff;
-    border: 3px solid #dcdde1;
-    border-radius: 14px;
-    padding: 14px;
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--text-dark);
-    cursor: pointer;
-    box-shadow: 0 4px 0 #dcdde1;
-    transition: all 0.1s;
-  }
-  .quiz-btn:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 #dcdde1;
-  }
-  .quiz-btn.correct-feedback {
-    background: var(--accent-green) !important;
-    border-color: #27ae60 !important;
-    color: white !important;
-    box-shadow: 0 4px 0 #27ae60 !important;
-  }
-
-  #quiz-status-msg {
-    margin-top: 15px;
-    font-size: 13px;
-    font-weight: 800;
-    min-height: 20px;
-    color: var(--accent-red);
-  }
-
-  /* 성공 축하 모달 디자인 */
-  .celebrate-icon {
-    font-size: 50px;
-    animation: bounce 1s infinite alternate;
-  }
-  @keyframes bounce {
-    from { transform: translateY(0); }
-    to { transform: translateY(-10px); }
-  }
-  .success-header {
-    font-size: 24px;
-    font-weight: 900;
-    color: var(--accent-green);
-    margin: 10px 0;
-  }
-  .success-summary {
-    font-size: 13px;
-    font-weight: 700;
-    color: #57606f;
-    background: rgba(0,0,0,0.05);
-    padding: 10px;
-    border-radius: 10px;
-    margin: 15px 0;
-    line-height: 1.5;
-  }
-  .primary-action-btn {
-    background: var(--accent-green);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 30px;
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 5px 0 #27ae60;
-    width: 100%;
-  }
-  .primary-action-btn:active {
-    transform: translateY(4px);
-    box-shadow: 0 1px 0 #27ae60;
-  }
-
-  /* --- 반응형 레이아웃 변형 기기 대응 (모바일) --- */
   @media (max-width: 850px) {
-    #workspace-viewport {
-      flex-direction: column-reverse;
-    }
-    #hotbar-viewport {
-      position: static;
-      transform: none;
-      width: 100%;
-      flex-direction: row;
-      border-radius: 0;
-      border-width: 3px 0 0 0;
-      padding: 10px;
-      justify-content: center;
-      align-items: center;
-    }
+    #workspace-viewport { flex-direction: column-reverse; }
+    #hotbar-viewport { position: static; transform: none; width: 100%; flex-direction: row; border-radius: 0; border-width: 3px 0 0 0; padding: 10px; justify-content: center; }
     .hotbar-title { display: none; }
-    .hotbar-slots {
-      flex-direction: row;
-      width: 100%;
-      justify-content: space-around;
-      max-width: 500px;
-    }
-    .item-slot {
-      flex: 1;
-      height: 64px;
-      max-width: 80px;
-    }
+    .hotbar-slots { flex-direction: row; width: 100%; justify-content: space-around; max-width: 500px; }
+    .item-slot { flex: 1; height: 64px; max-width: 80px; }
     .item-icon { font-size: 20px; }
     .item-label { font-size: 9px; }
-    #mission-dashboard {
-      width: calc(100% - 40px);
-      max-width: 360px;
-      left: 20px;
-      top: 20px;
-      padding: 10px;
-    }
+    #mission-dashboard { width: calc(100% - 40px); max-width: 360px; left: 20px; top: 20px; padding: 10px; }
   }
 </style>
 </head>
@@ -537,11 +286,9 @@
 
 <div id="app-container">
   <header id="header-viewport">
-    <div class="brand-logo">
-      <span>🧱</span> Jihoon's MineCraft-큐브 매스 <span style="font-size: 10px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; color: #fff;">PRO</span>
-    </div>
+    <div class="brand-logo"><span>🧱</span> Jihoon's Mine Craft - 큐브 매스 <span style="font-size: 10px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; color: #fff;">PRO</span></div>
     <div class="global-stats">
-      <div class="stat-badge">📊 누적 블록 수: <span id="ui-total-blocks">0</span>개</div>
+      <div class="stat-badge">📊 누적 블록: <span id="ui-total-blocks">0</span>개</div>
       <button id="ctrl-reset-btn" class="header-btn">🔄 전체 초기화</button>
     </div>
   </header>
@@ -613,35 +360,29 @@
   <div class="dialog-card">
     <div class="celebrate-icon">🏆</div>
     <h2 class="success-header">퍼펙트 아키텍트!</h2>
-    <p id="ui-success-summary" class="success-summary">주어진 기하학적 조건과 입체 연산 방정식을 완벽하게 해독하여 구조물을 완성했습니다.</p>
+    <p id="ui-success-summary" class="success-summary">주어진 조건을 만족했습니다.</p>
     <button id="ctrl-next-btn" class="primary-action-btn">다음 미션으로 진급 ▶</button>
   </div>
 </div>
 
 <script>
-/**
- * 🧱 큐브 매스: 마스터 빌더 에디션 커스텀 스크립트 엔진 코어
- */
 (function() {
   'use strict';
 
-  // --- 그래픽 시스템 파이프라인 상수 설정 ---
-  const GRID_SIZE = 8;       // 격자 물리 매트릭스 크기 (8x8)
-  const MAX_HEIGHT = 8;      // 최대 적층 허용 한계 수치
+  const GRID_SIZE = 8;
+  const MAX_HEIGHT = 8;
   
-  // 💎 고정정밀 렌더링을 위한 픽셀 고정 상수 치수 (확대/축소 시 비율 훼손 방지)
+  // 💎 픽셀 정밀 단위 고정 상수
   const TILE_W = 70;         
   const TILE_H = 36;         
   const BLOCK_H = 38;        
 
-  // --- 블록별 고해상도 아키텍처 컬러 에셋 분리 ---
   const VOXEL_PALETTE = {
     dirt:  { top: '#a0522d', right: '#8b4513', left: '#5c2e16', outline: '#3e1f0e' },
     stone: { top: '#bdc3c7', right: '#95a5a6', left: '#7f8c8d', outline: '#34495e' },
     gold:  { top: '#f1c40f', right: '#f39c12', left: '#d35400', outline: '#962d00' }
   };
 
-  // --- 애플리케이션 DOM 참조 바인딩 ---
   const canvas = document.getElementById('game-renderer');
   const ctx = canvas.getContext('2d');
   const container = document.getElementById('renderer-container');
@@ -649,33 +390,33 @@
   const uiGoldBadge = document.getElementById('ui-gold-badge');
   const systemToast = document.getElementById('system-toast');
 
-  // --- 엔티티 아키텍처 데이터 저장소 독립 변수 ---
   let grid = [];
   for (let x = 0; x < GRID_SIZE; x++) {
     grid.push(new Array(GRID_SIZE).fill(null).map(() => []));
   }
 
-  // --- 🔍 고정밀 카메라 & 제스처 트래킹 물리 상태 커널 ---
+  // --- 🔍 제스처 및 연산 조작 컨텍스트 커널 ---
   let zoom = 1.0;
   let panX = 0;
   let panY = 0;
   let selectedTool = 'dirt';
   let hoverTile = null;
-  let goldStorage = 3; // 최초 무료 체험 제공
+  let goldStorage = 3;
 
-  // 멀티터치 센서 감지 상태 메모리
+  // 🛠️ 문제 보완용 상태 메모리
   let isPointerDown = false;
-  let prevPointerX = 0;
-  let prevPointerY = 0;
+  let startX = 0, startY = 0;       // 터치다운 최초 좌표 (흔들림 측정용)
+  let prevPointerX = 0, prevPointerY = 0;
+  let isPanningAction = false;       // 데드존 돌파 후 이동 모드 활성화 여부
+  const PAN_DEADZONE = 6;            // 미세 흔들림 필터링 임계값 (6픽셀)
+
   let startPinchDist = 0;
   let startPinchZoom = 1.0;
-  let hasMovedSignificantly = false; // 단순 터치 클릭과 드래그 드로잉 판단 플래그
+  let blockPlacementLocked = false;  // 더블 클릭 및 다중 터치 적층 가드 락 플래그
 
-  // 파티클 피지컬 이펙트 배열 수집소 (성공 이펙트용)
   let particles = [];
   let animationFrameId = null;
 
-  // --- 시스템 리사이징 파이프라인 내장 ---
   function syncViewportDimensions() {
     const dpr = window.devicePixelRatio || 1;
     const rect = container.getBoundingClientRect();
@@ -686,152 +427,98 @@
   }
   window.addEventListener('resize', syncViewportDimensions);
 
-  // --- 아이소메트릭 기하학 연산 매트릭스 커널 ---
   function calculateVoxelApex(gx, gy, hLevel) {
     const scaleW = TILE_W * zoom;
     const scaleH = TILE_H * zoom;
     const scaleBH = BLOCK_H * zoom;
-
-    // 렌더링 왜곡을 방지하기 위해 픽셀 오프셋을 중심 기준으로 재설정
     const centerX = (canvas.width / (window.devicePixelRatio || 1)) / 2 + panX;
     const centerY = (canvas.height / (window.devicePixelRatio || 1)) / 2 - (GRID_SIZE * scaleH / 2) + (hLevel * scaleBH * 0.2) + panY;
 
-    return {
-      x: centerX + (gx - gy) * (scaleW / 2),
-      y: centerY + (gx + gy) * (scaleH / 2) - hLevel * scaleBH
-    };
+    return { x: centerX + (gx - gy) * (scaleW / 2), y: centerY + (gx + gy) * (scaleH / 2) - hLevel * scaleBH };
   }
 
-  // 폴리곤 투영 모델 정의
   function buildTopPolygon(gx, gy, hLevel) {
-    const apex = calculateVoxelApex(gx, gy, hLevel);
-    const w2 = (TILE_W * zoom) / 2;
-    const h2 = (TILE_H * zoom) / 2;
+    const apex = calculateVoxelApex(gx, gy, hLevel); const w2 = (TILE_W * zoom) / 2, h2 = (TILE_H * zoom) / 2;
     return [[apex.x, apex.y], [apex.x + w2, apex.y + h2], [apex.x, apex.y + (TILE_H * zoom)], [apex.x - w2, apex.y + h2]];
   }
-
   function buildLeftPolygon(gx, gy, hLevel) {
-    const apex = calculateVoxelApex(gx, gy, hLevel);
-    const w2 = (TILE_W * zoom) / 2;
-    const h2 = (TILE_H * zoom) / 2;
-    const bh = BLOCK_H * zoom;
+    const apex = calculateVoxelApex(gx, gy, hLevel); const w2 = (TILE_W * zoom) / 2, h2 = (TILE_H * zoom) / 2, bh = BLOCK_H * zoom;
     return [[apex.x - w2, apex.y + h2], [apex.x, apex.y + h2 * 2], [apex.x, apex.y + h2 * 2 + bh], [apex.x - w2, apex.y + h2 + bh]];
   }
-
   function buildRightPolygon(gx, gy, hLevel) {
-    const apex = calculateVoxelApex(gx, gy, hLevel);
-    const w2 = (TILE_W * zoom) / 2;
-    const h2 = (TILE_H * zoom) / 2;
-    const bh = BLOCK_H * zoom;
+    const apex = calculateVoxelApex(gx, gy, hLevel); const w2 = (TILE_W * zoom) / 2, h2 = (TILE_H * zoom) / 2, bh = BLOCK_H * zoom;
     return [[apex.x, apex.y + h2 * 2], [apex.x + w2, apex.y + h2], [apex.x + w2, apex.y + h2 + bh], [apex.x, apex.y + h2 * 2 + bh]];
   }
 
-  // 레이캐스팅용 점-다각형 내부 충돌 알고리즘
+  // 레이캐스팅용 점-다각형 충돌 매트릭스
   function isPointInsidePoly(polygon, x, y) {
     let collide = false;
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
       const xi = polygon[i][0], yi = polygon[i][1];
       const xj = polygon[j][0], yj = polygon[j][1];
-      const condition = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi + 0.000001) + xi);
-      if (condition) collide = !collide;
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi + 0.000001) + xi)) collide = !collide;
     }
     return collide;
   }
 
   function renderSolidPolygon(poly, fill, stroke) {
-    ctx.beginPath();
-    ctx.moveTo(poly[0][0], poly[0][1]);
+    ctx.beginPath(); ctx.moveTo(poly[0][0], poly[0][1]);
     for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i][0], poly[i][1]);
-    ctx.closePath();
-    ctx.fillStyle = fill;
-    ctx.fill();
-    if (stroke) {
-      ctx.strokeStyle = stroke;
-      ctx.lineWidth = Math.max(0.8, 1 * zoom);
-      ctx.stroke();
-    }
+    ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
+    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = Math.max(0.8, 0.9 * zoom); ctx.stroke(); }
   }
 
-  // --- 🎨 그래픽 엔진 메인 렌더링 파이프라인 ---
   function executeRenderPipeline() {
     const w = canvas.width / (window.devicePixelRatio || 1);
     const h = canvas.height / (window.devicePixelRatio || 1);
     ctx.clearRect(0, 0, w, h);
 
-    // 아이소메트릭 그리드 깊이 정렬(Depth-Sorting) 렌더 루프 부모-자식 탐색 순서
     for (let depthSum = 0; depthSum <= (GRID_SIZE - 1) * 2; depthSum++) {
       for (let gx = 0; gx < GRID_SIZE; gx++) {
-        const gy = depthSum - gx;
-        if (gy < 0 || gy >= GRID_SIZE) continue;
+        const gy = depthSum - gx; if (gy < 0 || gy >= GRID_SIZE) continue;
 
         const basePoly = buildTopPolygon(gx, gy, 0);
         const isSelectedTile = hoverTile && hoverTile.gx === gx && hoverTile.gy === gy;
-        
-        // 베이스 타일 바닥 그리드 스킨 판정
         const baseColor = isSelectedTile && grid[gx][gy].length === 0 ? '#55efc4' : '#2ecc71';
-        const baseOutline = isSelectedTile && grid[gx][gy].length === 0 ? '#00b894' : '#27ae60';
-        renderSolidPolygon(basePoly, baseColor, baseOutline);
+        renderSolidPolygon(basePoly, baseColor, '#27ae60');
 
-        // 적층된 큐브 메모리 디스플레이 루프
         const voxelStack = grid[gx][gy];
         for (let hz = 0; hz < voxelStack.length; hz++) {
-          const type = voxelStack[hz];
-          const colorSet = VOXEL_PALETTE[type];
-          const actualZ = hz + 1;
-
+          const type = voxelStack[hz]; const colorSet = VOXEL_PALETTE[type]; const actualZ = hz + 1;
           renderSolidPolygon(buildLeftPolygon(gx, gy, actualZ), colorSet.left, colorSet.outline);
           renderSolidPolygon(buildRightPolygon(gx, gy, actualZ), colorSet.right, colorSet.outline);
-          
-          // 최상단 면은 큐브의 꼭대기일 때만 그림
-          if (hz === voxelStack.length - 1) {
-            renderSolidPolygon(buildTopPolygon(gx, gy, actualZ), colorSet.top, colorSet.outline);
-          }
+          if (hz === voxelStack.length - 1) renderSolidPolygon(buildTopPolygon(gx, gy, actualZ), colorSet.top, colorSet.outline);
         }
 
-        // 호버 가이드 실시간 프리뷰 투영 홀로그램
         if (isSelectedTile) {
           const currentHeight = voxelStack.length;
           if (selectedTool === 'eraser') {
             if (currentHeight > 0) {
-              ctx.globalAlpha = 0.65;
-              renderSolidPolygon(buildTopPolygon(gx, gy, currentHeight), '#d63031', '#ff7675');
-              ctx.globalAlpha = 1.0;
+              ctx.globalAlpha = 0.65; renderSolidPolygon(buildTopPolygon(gx, gy, currentHeight), '#d63031', '#ff7675'); ctx.globalAlpha = 1.0;
             }
-          } else {
-            if (currentHeight < MAX_HEIGHT) {
-              const previewPalette = VOXEL_PALETTE[selectedTool];
-              ctx.globalAlpha = 0.5;
-              renderSolidPolygon(buildLeftPolygon(gx, gy, currentHeight + 1), previewPalette.left, previewPalette.outline);
-              renderSolidPolygon(buildRightPolygon(gx, gy, currentHeight + 1), previewPalette.right, previewPalette.outline);
-              renderSolidPolygon(buildTopPolygon(gx, gy, currentHeight + 1), previewPalette.top, previewPalette.outline);
-              ctx.globalAlpha = 1.0;
-            }
+          } else if (currentHeight < MAX_HEIGHT) {
+            const previewPalette = VOXEL_PALETTE[selectedTool]; ctx.globalAlpha = 0.5;
+            renderSolidPolygon(buildLeftPolygon(gx, gy, currentHeight + 1), previewPalette.left, previewPalette.outline);
+            renderSolidPolygon(buildRightPolygon(gx, gy, currentHeight + 1), previewPalette.right, previewPalette.outline);
+            renderSolidPolygon(buildTopPolygon(gx, gy, currentHeight + 1), previewPalette.top, previewPalette.outline);
+            ctx.globalAlpha = 1.0;
           }
         }
       }
     }
-
-    // 파티클 실시간 연산 드로우 스케줄 배정
-    if (particles.length > 0) {
-      animateParticlesLoop();
-    }
+    if (particles.length > 0) animateParticlesLoop();
   }
 
-  // 정밀 충돌 레이캐스터 피킹 시스템
   function performRaycastCollision(screenX, screenY) {
     for (let depthSum = (GRID_SIZE - 1) * 2; depthSum >= 0; depthSum--) {
       for (let gx = GRID_SIZE - 1; gx >= 0; gx--) {
-        const gy = depthSum - gx;
-        if (gy < 0 || gy >= GRID_SIZE) continue;
-
+        const gy = depthSum - gx; if (gy < 0 || gy >= GRID_SIZE) continue;
         const stackHeight = grid[gx][gy].length;
         if (stackHeight > 0) {
           if (isPointInsidePoly(buildTopPolygon(gx, gy, stackHeight), screenX, screenY)) return { gx, gy };
           if (isPointInsidePoly(buildLeftPolygon(gx, gy, stackHeight), screenX, screenY)) return { gx, gy };
           if (isPointInsidePoly(buildRightPolygon(gx, gy, stackHeight), screenX, screenY)) return { gx, gy };
-        } else {
-          if (isPointInsidePoly(buildTopPolygon(gx, gy, 0), screenX, screenY)) return { gx, gy };
-        }
+        } else if (isPointInsidePoly(buildTopPolygon(gx, gy, 0), screenX, screenY)) return { gx, gy };
       }
     }
     return null;
@@ -839,103 +526,106 @@
 
   function resolvePointerCoordinates(evt) {
     const rect = canvas.getBoundingClientRect();
-    return {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top
-    };
+    return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
   }
 
-  // --- 🖐️ 스마트 터치 & 제스처 리스너 통합 인터페이스 ---
+  // --- 🖐️ 개선된 스마트 터치 및 무이탈 안전 제스처 엔진 ---
+  function onPointerDownStart(clientX, clientY) {
+    isPointerDown = true;
+    isPanningAction = false;
+    blockPlacementLocked = false; // 배치 잠금 해제
+    startX = clientX;
+    startY = clientY;
+    prevPointerX = clientX;
+    prevPointerY = clientY;
+  }
+
+  function onPointerMoveProcess(clientX, clientY) {
+    if (!isPointerDown) return;
+
+    const currentDeltaX = clientX - startX;
+    const currentDeltaY = clientY - startY;
+
+    // 🛠️ 문제점 2 패치: 데드존을 넘어서야 비로소 드래그로 판정 (화면 미세흔들림 방지)
+    if (!isPanningAction && (Math.abs(currentDeltaX) > PAN_DEADZONE || Math.abs(currentDeltaY) > PAN_DEADZONE)) {
+      isPanningAction = true;
+      blockPlacementLocked = true; // 화면 조작이 시작되면 블록 놓기 차단
+    }
+
+    if (isPanningAction) {
+      const stepX = clientX - prevPointerX;
+      const stepY = clientY - prevPointerY;
+      panX += stepX;
+      panY += stepY;
+
+      // 🛠️ 문제점 1 패치: 카메라가 무한정 밖으로 탈출하는 스크롤 이탈 방지 한계선 설정
+      const boundW = (canvas.width / (window.devicePixelRatio || 1)) * 0.7;
+      const boundH = (canvas.height / (window.devicePixelRatio || 1)) * 0.7;
+      panX = Math.min(Math.max(panX, -boundW), boundW);
+      panY = Math.min(Math.max(panY, -boundH), boundH);
+    }
+
+    prevPointerX = clientX;
+    prevPointerY = clientY;
+  }
+
+  // 이벤트가 탈출해도 브라우저 전역 윈도우에서 트래킹하도록 마운트 바인딩 구조 개선
   canvas.addEventListener('touchstart', function(e) {
     if (e.touches.length === 2) {
-      isPointerDown = false; // 싱글 터치 모드 취소
+      isPointerDown = false;
+      blockPlacementLocked = true;
       startPinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
       startPinchZoom = zoom;
     } else if (e.touches.length === 1) {
-      isPointerDown = true;
-      hasMovedSignificantly = false;
-      prevPointerX = e.touches[0].clientX;
-      prevPointerY = e.touches[0].clientY;
+      onPointerDownStart(e.touches[0].clientX, e.touches[0].clientY);
+      const pos = resolvePointerCoordinates(e.touches[0]);
+      hoverTile = performRaycastCollision(pos.x, pos.y);
     }
   }, { passive: true });
 
-  canvas.addEventListener('touchmove', function(e) {
+  window.addEventListener('touchmove', function(e) {
+    if (!isPointerDown && e.touches.length !== 2) return;
+    
     if (e.touches.length === 2) {
-      // 투핑거 핀치 줌 & 팬 하이브리드 연산 동시 처리
       const currentDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
       const pinchFactor = currentDist / startPinchDist;
-      zoom = Math.min(Math.max(startPinchZoom * pinchFactor, 0.45), 2.8);
-
-      // 중심점 중간 트래킹 화면 보정
-      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-      if(prevPointerX && prevPointerY) {
-         panX += midX - prevPointerX;
-         panY += midY - prevPointerY;
-      }
-      prevPointerX = midX;
-      prevPointerY = midY;
-      
+      zoom = Math.min(Math.max(startPinchZoom * pinchFactor, 0.45), 2.5); // 배율 한계 고정
       executeRenderPipeline();
     } else if (e.touches.length === 1 && isPointerDown) {
-      const deltaX = e.touches[0].clientX - prevPointerX;
-      const deltaY = e.touches[0].clientY - prevPointerY;
-
-      // 두 손가락이 아닌 한 손가락 상태에서 크게 드래그하면 화면 팬 이동으로 영리하게 자동 전환
-      if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
-        hasMovedSignificantly = true;
-        panX += deltaX;
-        panY += deltaY;
-        prevPointerX = e.touches[0].clientX;
-        prevPointerY = e.touches[0].clientY;
-      }
-
+      onPointerMoveProcess(e.touches[0].clientX, e.touches[0].clientY);
       const pos = resolvePointerCoordinates(e.touches[0]);
       hoverTile = performRaycastCollision(pos.x, pos.y);
       executeRenderPipeline();
     }
   }, { passive: true });
 
-  canvas.addEventListener('touchend', function(e) {
-    if (isPointerDown && !hasMovedSignificantly && e.changedTouches.length > 0) {
+  window.addEventListener('touchend', function(e) {
+    if (isPointerDown && !blockPlacementLocked && e.changedTouches.length > 0) {
       const pos = resolvePointerCoordinates(e.changedTouches[0]);
       const target = performRaycastCollision(pos.x, pos.y);
       if (target) commitVoxelMutation(target.gx, target.gy);
     }
     isPointerDown = false;
     hoverTile = null;
-    prevPointerX = 0;
-    prevPointerY = 0;
     executeRenderPipeline();
   }, { passive: true });
 
-  // --- 데스크탑 환경 마우스 및 휠 백업 폴백 시스템 ---
-  canvas.addEventListener('mousedown', function(e) {
-    isPointerDown = true;
-    hasMovedSignificantly = false;
-    prevPointerX = e.clientX;
-    prevPointerY = e.clientY;
-  });
-
-  canvas.addEventListener('mousemove', function(e) {
-    const pos = resolvePointerCoordinates(e);
-    if (isPointerDown) {
-      const deltaX = e.clientX - prevPointerX;
-      const deltaY = e.clientY - prevPointerY;
-      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
-        hasMovedSignificantly = true;
-        panX += deltaX;
-        panY += deltaY;
-        prevPointerX = e.clientX;
-        prevPointerY = e.clientY;
-      }
+  // PC 마우스 폴백 리스너 구조 개정
+  canvas.addEventListener('mousedown', function(e) { onPointerDownStart(e.clientX, e.clientY); });
+  window.addEventListener('mousemove', function(e) {
+    if(isPointerDown) {
+      onPointerMoveProcess(e.clientX, e.clientY);
+      const pos = resolvePointerCoordinates(e);
+      hoverTile = performRaycastCollision(pos.x, pos.y);
+      executeRenderPipeline();
+    } else {
+      const pos = resolvePointerCoordinates(e);
+      hoverTile = performRaycastCollision(pos.x, pos.y);
+      executeRenderPipeline();
     }
-    hoverTile = performRaycastCollision(pos.x, pos.y);
-    executeRenderPipeline();
   });
-
-  canvas.addEventListener('mouseup', function(e) {
-    if (isPointerDown && !hasMovedSignificantly) {
+  window.addEventListener('mouseup', function(e) {
+    if (isPointerDown && !blockPlacementLocked) {
       const pos = resolvePointerCoordinates(e);
       const target = performRaycastCollision(pos.x, pos.y);
       if (target) commitVoxelMutation(target.gx, target.gy);
@@ -944,21 +634,19 @@
     executeRenderPipeline();
   });
 
-  canvas.addEventListener('mouseleave', function() {
-    isPointerDown = false;
-    hoverTile = null;
-    executeRenderPipeline();
-  });
-
   canvas.addEventListener('wheel', function(e) {
     e.preventDefault();
-    const zoomDelta = e.deltaY * -0.0015;
-    zoom = Math.min(Math.max(zoom + zoomDelta, 0.45), 2.8);
+    zoom = Math.min(Math.max(zoom + e.deltaY * -0.0015, 0.45), 2.5);
     executeRenderPipeline();
   }, { passive: false });
 
-  // --- 🧱 블록 변형 및 적층 트랜잭션 엔진 ---
+
+  // --- 🛠️ 문제점 3 패치: Edge-Triggered 원터치 단일 인스턴스 락 기능 탑재 ---
   function commitVoxelMutation(gx, gy) {
+    // 이미 락이 활성화된 트랜잭션 도중 세션이면 즉시 드롭처리
+    if (blockPlacementLocked) return;
+    blockPlacementLocked = true; // 배치 발동 즉시 세션 잠금
+
     const targetStack = grid[gx][gy];
 
     if (selectedTool === 'eraser') {
@@ -971,29 +659,24 @@
     }
 
     if (selectedTool === 'gold' && goldStorage <= 0) {
-      triggerToastNotification("⚠️ 황금 블록이 부족합니다! 퀴즈를 풀어보세요.");
+      triggerToastNotification("⚠️ 황금 블록 부족! 퀴즈로 충전하세요.");
       openRechargeQuizModal();
       return;
     }
 
     if (targetStack.length < MAX_HEIGHT) {
       targetStack.push(selectedTool);
-      if (selectedTool === 'gold') {
-        goldStorage--;
-        syncInventoryDisplay();
-      }
+      if (selectedTool === 'gold') { goldStorage--; syncInventoryDisplay(); }
       refreshSystemState();
     } else {
-      triggerToastNotification("⚠️ 더 이상 높이 쌓을 수 없습니다! (최대 8층)");
+      triggerToastNotification("⚠️ 최대 높이 도달! (8층)");
     }
   }
 
   function refreshSystemState() {
     let aggregate = 0;
     for (let x = 0; x < GRID_SIZE; x++) {
-      for (let y = 0; y < GRID_SIZE; y++) {
-        aggregate += grid[x][y].length;
-      }
+      for (let y = 0; y < GRID_SIZE; y++) { aggregate += grid[x][y].length; }
     }
     uiTotalBlocks.textContent = aggregate;
     executeRenderPipeline();
@@ -1001,81 +684,52 @@
   }
 
   function triggerToastNotification(msg) {
-    systemToast.textContent = msg;
-    systemToast.style.opacity = '1';
+    systemToast.textContent = msg; systemToast.style.opacity = '1';
     systemToast.style.transform = 'translateX(-50%) translateY(-5px)';
     clearTimeout(systemToast.timer);
-    systemToast.timer = setTimeout(() => {
-      systemToast.style.opacity = '0';
-      systemToast.style.transform = 'translateX(-50%) translateY(0)';
-    }, 2000);
+    systemToast.timer = setTimeout(() => { systemToast.style.opacity = '0'; systemToast.style.transform = 'translateX(-50%) translateY(0)'; }, 2000);
   }
 
-  // --- 🎯 공간 기하학 수학 미션 연산 코어 시스템 ---
+  // --- 공간 기하학 연산 매트릭스 백엔드 ---
   const MISSION_POOL = [
     { type: 'fixed', width: 2, depth: 2, height: 2, name: '큐브 오두막 짓기' },
     { type: 'volume', targetVol: 12, name: '마법 상자의 비밀 (부피 12)' },
     { type: 'fixed', width: 3, depth: 2, height: 2, name: '직육면체 비밀기지' },
-    { type: 'volume', targetVol: 24, name: '거대 보관창고 설계 (부피 24)' },
-    { type: 'fixed', width: 4, depth: 3, height: 2, name: '스마트 빌더 센터' },
-    { type: 'volume', targetVol: 16, name: '수학적 공간 에너지원 (부피 16)' }
+    { type: 'volume', targetVol: 24, name: '거대 보관창고 설계 (부피 24)' }
   ];
   let currentMissionIndex = 0;
   let isMissionCleared = false;
 
-  function getCurrentMission() {
-    return MISSION_POOL[currentMissionIndex % MISSION_POOL.length];
-  }
+  function getCurrentMission() { return MISSION_POOL[currentMissionIndex % MISSION_POOL.length]; }
 
   function computeBoundingStructure() {
-    let minX = Infinity, maxX = -Infinity;
-    let minY = Infinity, maxY = -Infinity;
-    let hasData = false;
-
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity; let hasData = false;
     for (let x = 0; x < GRID_SIZE; x++) {
       for (let y = 0; y < GRID_SIZE; y++) {
         if (grid[x][y].length > 0) {
           hasData = true;
-          if (x < minX) minX = x;
-          if (x > maxX) maxX = x;
-          if (y < minY) minY = y;
-          if (y > maxY) maxY = y;
+          if (x < minX) minX = x; if (x > maxX) maxX = x;
+          if (y < minY) minY = y; if (y > maxY) maxY = y;
         }
       }
     }
-
     if (!hasData) return null;
+    const w = maxX - minX + 1; const d = maxY - minY + 1;
+    let maxH = 0, isPerfectFlat = true, referenceH = grid[minX][minY].length;
 
-    const w = maxX - minX + 1;
-    const d = maxY - minY + 1;
-    let maxH = 0;
-    let isPerfectFlat = true;
-    let referenceH = grid[minX][minY].length;
-
-    // 빈 틈새가 있거나 높낮이가 다르면 완벽한 직육면체가 아닌 것으로 필터링
     for (let x = minX; x <= maxX; x++) {
       for (let y = minY; y <= maxY; y++) {
         const curH = grid[x][y].length;
         if (curH > maxH) maxH = curH;
-        if (curH !== referenceH || curH === 0) {
-          isPerfectFlat = false;
-        }
+        if (curH !== referenceH || curH === 0) isPerfectFlat = false;
       }
     }
-
-    return {
-      width: w,
-      depth: d,
-      maxHeight: maxH,
-      isSolidRect: isPerfectFlat,
-      calculatedVolume: w * d * referenceH
-    };
+    return { width: w, depth: d, maxHeight: maxH, isSolidRect: isPerfectFlat, calculatedVolume: w * d * referenceH };
   }
 
   function updateMissionUI() {
     const mission = getCurrentMission();
     document.getElementById('ui-mission-title').textContent = `🎯 ${mission.name}`;
-    
     if (mission.type === 'fixed') {
       document.getElementById('ui-formula-text').innerHTML = `가로 <b>${mission.width}</b> × 세로 <b>${mission.depth}</b> × 높이 <b>${mission.height}</b> 구조`;
     } else {
@@ -1088,248 +742,104 @@
     const stats = computeBoundingStructure();
     const trackSize = document.getElementById('ui-track-size');
     const trackVol = document.getElementById('ui-track-volume');
-
-    if (!stats) {
-      trackSize.textContent = "0 × 0 × 0";
-      trackVol.textContent = "0 (건축 대기 중)";
-      trackVol.style.color = '#fff';
-      return;
-    }
-
+    if (!stats) { trackSize.textContent = "0 × 0 × 0"; trackVol.textContent = "0 (건축 대기 중)"; trackVol.style.color = '#fff'; return; }
     if (stats.isSolidRect) {
       trackSize.textContent = `${stats.width} × ${stats.depth} × ${stats.maxHeight}`;
-      trackVol.textContent = stats.calculatedVolume;
-      trackVol.style.color = '#2ecc71';
+      trackVol.textContent = stats.calculatedVolume; trackVol.style.color = '#2ecc71';
     } else {
-      trackSize.textContent = "규격 불일치";
-      trackVol.textContent = "울퉁불퉁함 (윗면을 맞춰주세요)";
-      trackVol.style.color = '#e74c3c';
+      trackSize.textContent = "규격 불일치"; trackVol.textContent = "울퉁불퉁함 (윗면 조절 필요)"; trackVol.style.color = '#e74c3c';
     }
   }
 
   function verifyMissionRequirement() {
     syncLiveMetrics();
     if (isMissionCleared) return;
-
-    const stats = computeBoundingStructure();
-    if (!stats || !stats.isSolidRect) return;
-
-    const mission = getCurrentMission();
-    let isPassed = false;
+    const stats = computeBoundingStructure(); if (!stats || !stats.isSolidRect) return;
+    const mission = getCurrentMission(); let isPassed = false;
 
     if (mission.type === 'fixed') {
-      // 기하학 대칭성 필터링 (가로 세로 회전 인정)
       const matchesStandard = (stats.width === mission.width && stats.depth === mission.depth);
       const matchesInverted = (stats.width === mission.depth && stats.depth === mission.width);
-      if ((matchesStandard || matchesInverted) && stats.maxHeight === mission.height) {
-        isPassed = true;
-      }
+      if ((matchesStandard || matchesInverted) && stats.maxHeight === mission.height) isPassed = true;
     } else if (mission.type === 'volume') {
-      if (stats.calculatedVolume === mission.targetVol) {
-        isPassed = true;
-      }
+      if (stats.calculatedVolume === mission.targetVol) isPassed = true;
     }
 
-    if (isPassed) {
-      isMissionCleared = true;
-      triggerSuccessCelebration();
-    }
+    if (isPassed) { isMissionCleared = true; spawnConfettiExplosion(); document.getElementById('ui-success-summary').innerHTML = `축하합니다!<br><b>"${mission.name}"</b>을 완성했습니다.`; document.getElementById('modal-success').classList.remove('hidden'); }
   }
 
-  // --- 🎉 물리기반 색종이 폭죽 스파크 엔진 ---
   function spawnConfettiExplosion() {
-    const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'];
-    const viewW = canvas.width / (window.devicePixelRatio || 1);
-    const viewH = canvas.height / (window.devicePixelRatio || 1);
-    
-    for (let i = 0; i < 120; i++) {
-      particles.push({
-        x: viewW / 2,
-        y: viewH + 20,
-        vx: (Math.random() - 0.5) * 15,
-        vy: -Math.random() * 16 - 10,
-        size: Math.random() * 6 + 4,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        gravity: 0.35,
-        rotation: Math.random() * 360,
-        rotSpeed: (Math.random() - 0.5) * 10
-      });
+    const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#3498db', '#2ecc71'];
+    const viewW = canvas.width / (window.devicePixelRatio || 1); const viewH = canvas.height / (window.devicePixelRatio || 1);
+    for (let i = 0; i < 80; i++) {
+      particles.push({ x: viewW / 2, y: viewH + 20, vx: (Math.random() - 0.5) * 14, vy: -Math.random() * 15 - 8, size: Math.random() * 5 + 4, color: colors[Math.floor(Math.random() * colors.length)], gravity: 0.35, rotation: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 8 });
     }
   }
 
   function animateParticlesLoop() {
     for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += p.gravity;
-      p.rotation += p.rotSpeed;
-
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rotation * Math.PI / 180);
-      ctx.fillStyle = p.color;
-      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-      ctx.restore();
-
-      // 화면 하단 경계 밖으로 이탈하면 메모리 자원 회수 해제
-      if (p.y > (canvas.height / (window.devicePixelRatio || 1)) + 50) {
-        particles.splice(i, 1);
-      }
+      const p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += p.gravity; p.rotation += p.rotSpeed;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180); ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size); ctx.restore();
+      if (p.y > (canvas.height / (window.devicePixelRatio || 1)) + 50) particles.splice(i, 1);
     }
-    if(particles.length > 0) {
-      animationFrameId = requestAnimationFrame(executeRenderPipeline);
-    }
+    if(particles.length > 0) animationFrameId = requestAnimationFrame(executeRenderPipeline);
   }
 
-  function triggerSuccessCelebration() {
-    spawnConfettiExplosion();
-    const mission = getCurrentMission();
-    document.getElementById('ui-success-summary').innerHTML = `축하합니다!<br><b>"${mission.name}"</b> 설계 모델을 오차 없이 완벽하게 구축하는 데 성공했습니다.`;
-    document.getElementById('modal-success').classList.remove('hidden');
-  }
-
-  // --- 🎰 암산 연산 매트릭스 퀴즈 엔진 ---
   let cachedQuizAnswer = null;
-
   function openRechargeQuizModal() {
-    const operators = ['+', '-', '×'];
-    const op = operators[Math.floor(Math.random() * operators.length)];
+    const operators = ['+', '-', '×']; const op = operators[Math.floor(Math.random() * operators.length)];
     let num1, num2, correctAns;
+    if (op === '+') { num1 = Math.floor(Math.random() * 30) + 10; num2 = Math.floor(Math.random() * 30) + 10; correctAns = num1 + num2; }
+    else if (op === '-') { num1 = Math.floor(Math.random() * 40) + 30; num2 = Math.floor(Math.random() * 25) + 5; correctAns = num1 - num2; }
+    else { num1 = Math.floor(Math.random() * 7) + 2; num2 = Math.floor(Math.random() * 8) + 2; correctAns = num1 * num2; }
 
-    if (op === '+') {
-      num1 = Math.floor(Math.random() * 38) + 12;
-      num2 = Math.floor(Math.random() * 45) + 12;
-      correctAns = num1 + num2;
-    } else if (op === '-') {
-      num1 = Math.floor(Math.random() * 50) + 40;
-      num2 = Math.floor(Math.random() * 35) + 5;
-      correctAns = num1 - num2;
-    } else {
-      num1 = Math.floor(Math.random() * 8) + 2;
-      num2 = Math.floor(Math.random() * 8) + 2;
-      correctAns = num1 * num2;
-    }
-
-    cachedQuizAnswer = correctAns;
-    document.getElementById('ui-quiz-q').textContent = `${num1} ${op} ${num2} = ?`;
-
-    // 보기 난수 자동 배정 시스템
+    cachedQuizAnswer = correctAns; document.getElementById('ui-quiz-q').textContent = `${num1} ${op} ${num2} = ?`;
     const optionSet = new Set([correctAns]);
-    while (optionSet.size < 4) {
-      const variance = Math.floor(Math.random() * 19) - 9;
-      const fakeAns = correctAns + variance;
-      if (fakeAns > 0 && fakeAns !== correctAns) {
-        optionSet.add(fakeAns);
-      }
-    }
+    while (optionSet.size < 4) { const val = correctAns + (Math.floor(Math.random() * 15) - 7); if (val > 0 && val !== correctAns) optionSet.add(val); }
 
     const shuffledOptions = Array.from(optionSet).sort(() => Math.random() - 0.5);
-    const choicesContainer = document.getElementById('ui-quiz-choices');
-    choicesContainer.innerHTML = '';
+    const choicesContainer = document.getElementById('ui-quiz-choices'); choicesContainer.innerHTML = '';
 
     shuffledOptions.forEach(val => {
-      const optionBtn = document.createElement('button');
-      optionBtn.className = 'quiz-btn';
-      optionBtn.textContent = val;
+      const optionBtn = document.createElement('button'); optionBtn.className = 'quiz-btn'; optionBtn.textContent = val;
       optionBtn.addEventListener('click', function() {
         if (val === cachedQuizAnswer) {
-          optionBtn.classList.add('correct-feedback');
-          const rewardCount = op === '×' ? 5 : 3;
-          goldStorage += rewardCount;
-          triggerToastNotification(`🎉 정답! 황금 블록이 ${rewardCount}개 충전되었습니다.`);
-          syncInventoryDisplay();
-          setTimeout(() => {
-            document.getElementById('modal-quiz').classList.add('hidden');
-            setVoxelActiveTool('gold');
-          }, 800);
-        } else {
-          document.getElementById('quiz-status-msg').textContent = "❌ 다시 한 번 정확하게 계산해 볼까요?";
-          optionBtn.style.borderColor = 'var(--accent-red)';
-          optionBtn.style.color = 'var(--accent-red)';
-        }
+          optionBtn.classList.add('correct-feedback'); const reward = op === '×' ? 5 : 3; goldStorage += reward;
+          triggerToastNotification(`정답! 황금 블록 ${reward}개 충전.`); syncInventoryDisplay();
+          setTimeout(() => { document.getElementById('modal-quiz').classList.add('hidden'); setVoxelActiveTool('gold'); }, 600);
+        } else { document.getElementById('quiz-status-msg').textContent = "❌ 다시 한 번 연산해 보세요!"; }
       });
       choicesContainer.appendChild(optionBtn);
     });
-
-    document.getElementById('quiz-status-msg').textContent = '';
-    document.getElementById('modal-quiz').classList.remove('hidden');
+    document.getElementById('quiz-status-msg').textContent = ''; document.getElementById('modal-quiz').classList.remove('hidden');
   }
 
-  // --- UI 상호작용 동적 제어 매핑 ---
   function setVoxelActiveTool(toolName) {
     selectedTool = toolName;
-    document.querySelectorAll('.item-slot').forEach(slot => {
-      slot.classList.toggle('active', slot.dataset.voxel === toolName);
-    });
+    document.querySelectorAll('.item-slot').forEach(slot => slot.classList.toggle('active', slot.dataset.voxel === toolName));
     executeRenderPipeline();
   }
-
-  function syncInventoryDisplay() {
-    uiGoldBadge.textContent = goldStorage;
-  }
+  function syncInventoryDisplay() { uiGoldBadge.textContent = goldStorage; }
 
   document.querySelectorAll('.item-slot').forEach(slot => {
-    slot.addEventListener('click', function(e) {
-      // 충전 버튼 자체 클릭 시 전이 간섭 차단
-      if (e.target.id === 'ctrl-quiz-btn') return;
-      setVoxelActiveTool(slot.dataset.voxel);
-    });
+    slot.addEventListener('click', function(e) { if (e.target.id === 'ctrl-quiz-btn') return; setVoxelActiveTool(slot.dataset.voxel); });
   });
-
-  document.getElementById('ctrl-quiz-btn').addEventListener('click', function(e) {
-    e.stopPropagation();
-    openRechargeQuizModal();
-  });
-
-  document.getElementById('ctrl-skip-btn').addEventListener('click', function() {
-    currentMissionIndex++;
-    isMissionCleared = false;
-    updateMissionUI();
-    triggerToastNotification("새로운 미션으로 전환되었습니다.");
-  });
-
-  document.getElementById('ctrl-next-btn').addEventListener('click', function() {
-    document.getElementById('modal-success').classList.add('hidden');
-    // 다음 단계를 위해 필드 그리드 청소 거동 수행
-    clearWorldGrid();
-    currentMissionIndex++;
-    isMissionCleared = false;
-    updateMissionUI();
-  });
+  document.getElementById('ctrl-quiz-btn').addEventListener('click', function(e) { e.stopPropagation(); openRechargeQuizModal(); });
+  document.getElementById('ctrl-skip-btn').addEventListener('click', function() { currentMissionIndex++; isMissionCleared = false; updateMissionUI(); });
+  document.getElementById('ctrl-next-btn').addEventListener('click', function() { document.getElementById('modal-success').classList.add('hidden'); clearWorldGrid(); currentMissionIndex++; isMissionCleared = false; updateMissionUI(); });
 
   function clearWorldGrid() {
-    for (let x = 0; x < GRID_SIZE; x++) {
-      for (let y = 0; y < GRID_SIZE; y++) {
-        grid[x][y] = [];
-      }
-    }
-    particles = [];
-    if(animationFrameId) cancelAnimationFrame(animationFrameId);
+    for (let x = 0; x < GRID_SIZE; x++) for (let y = 0; y < GRID_SIZE; y++) grid[x][y] = [];
+    particles = []; if(animationFrameId) cancelAnimationFrame(animationFrameId);
     refreshSystemState();
   }
 
   document.getElementById('ctrl-reset-btn').addEventListener('click', function() {
-    if(confirm("정말로 구조물을 전부 초기화하고 처음부터 다시 시작할까요?")) {
-      clearWorldGrid();
-      zoom = 1.0;
-      panX = 0;
-      panY = 0;
-      isMissionCleared = false;
-      updateMissionUI();
-      triggerToastNotification("시스템 맵이 초기화되었습니다.");
-    }
+    if(confirm("맵을 초기화하시겠습니까?")) { clearWorldGrid(); zoom = 1.0; panX = 0; panY = 0; isMissionCleared = false; updateMissionUI(); }
   });
 
-  // --- 시스템 부팅 런타임 이니셜라이저 ---
-  setTimeout(() => {
-    syncViewportDimensions();
-    syncInventoryDisplay();
-    updateMissionUI();
-  }, 150);
-
+  setTimeout(() => { syncViewportDimensions(); syncInventoryDisplay(); updateMissionUI(); }, 100);
 })();
 </script>
-
 </body>
 </html>
