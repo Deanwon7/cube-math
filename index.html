@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🧱 큐브 매스: 인피니트 빌더</title>
+<title>🧱 큐브 매스: 인피니트 빌더 (안정화 버전)</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
   html, body {
@@ -11,7 +11,7 @@
     font-family: 'Trebuchet MS', 'Malgun Gothic', sans-serif;
     background: linear-gradient(180deg, #7ec8f2 0%, #a8ddf0 40%, #cdeeff 100%);
     overflow: hidden;
-    touch-action: none; /* 모바일 스크롤 및 줌 방지 */
+    touch-action: none;
   }
   #game {
     display: flex; flex-direction: column; align-items: center;
@@ -22,7 +22,7 @@
     display: flex; align-items: center; justify-content: space-between;
     background: #4a3728; border: 4px solid #2b1d14; border-radius: 10px;
     box-shadow: 0 4px 0 #1c120c, 0 6px 10px rgba(0,0,0,0.25);
-    padding: 10px 16px; color: #fff8e7;
+    padding: 10px 16px; color: #fff8e7; z-index: 10;
   }
   #topbar .title { font-size: 18px; font-weight: 800; text-shadow: 2px 2px 0 #000; letter-spacing: 1px; }
   #topbar .counter {
@@ -37,23 +37,32 @@
   }
   #resetBtn:active { transform: translateY(3px); box-shadow: none; }
 
-  #mainArea { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 940px; width: 100%; }
+  /* 터치 간섭 방지를 위해 영역을 독립적으로 격리 */
+  #mainArea { 
+    display: flex; gap: 14px; justify-content: center; align-items: flex-start;
+    max-width: 940px; width: 100%; flex: 1; position: relative;
+  }
 
   #canvasWrap {
     background: linear-gradient(180deg, #bfe8ff 0%, #eafcff 100%);
     border: 5px solid #2b1d14; border-radius: 14px;
     box-shadow: 0 6px 0 #1c120c, 0 10px 18px rgba(0,0,0,0.3), inset 0 0 40px rgba(255,255,255,0.4);
-    overflow: hidden; flex-shrink: 0;
+    overflow: hidden; flex-shrink: 0; position: relative; z-index: 1;
   }
   #gameCanvas { display: block; cursor: pointer; touch-action: none; }
 
-  #missionPanel {
-    width: 230px; background: #4a3728; border: 4px solid #2b1d14; border-radius: 14px;
-    box-shadow: 0 6px 0 #1c120c, 0 10px 18px rgba(0,0,0,0.3);
-    color: #fff8e7; padding: 14px; display: flex; flex-direction: column; gap: 10px;
+  /* 제어 패널 독립 격리 */
+  #sideControlPanel {
+    width: 240px; display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; position: relative; z-index: 5;
   }
-  .missionHeader { font-size: 16px; font-weight: 800; text-shadow: 1px 1px 0 #000; border-bottom: 2px dashed #8a6a4d; padding-bottom: 8px; }
-  .missionDesc { font-size: 13px; line-height: 1.5; background: #2b1d14; padding: 10px; border-radius: 8px; border: 2px solid #6b4f3a; }
+
+  #missionPanel {
+    background: #4a3728; border: 4px solid #2b1d14; border-radius: 14px;
+    box-shadow: 0 5px 0 #1c120c, 0 8px 15px rgba(0,0,0,0.3);
+    color: #fff8e7; padding: 14px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .missionHeader { font-size: 16px; font-weight: 800; text-shadow: 1px 1px 0 #000; border-bottom: 2px dashed #8a6a4d; padding-bottom: 6px; }
+  .missionDesc { font-size: 13px; line-height: 1.5; background: #2b1d14; padding: 10px; border-radius: 8px; border: 2px solid #6b4f3a; color: #fff; }
   .missionTarget { font-size: 13px; font-weight: 700; color: #ffd93d; line-height: 1.4; }
   .missionProgress { font-size: 12px; background: #2b1d14; padding: 8px; border-radius: 8px; border: 2px solid #6b4f3a; line-height: 1.5; min-height: 54px; color: #a8ddf0; }
   #skipMissionBtn {
@@ -63,39 +72,39 @@
   #skipMissionBtn:active { transform: translateY(3px); box-shadow: none; }
 
   #inventory {
-    width: 100%; max-width: 940px; display: flex; justify-content: center; gap: 10px;
-    background: #4a3728; border: 4px solid #2b1d14; border-radius: 10px;
-    box-shadow: 0 4px 0 #1c120c, 0 6px 10px rgba(0,0,0,0.25); padding: 10px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    background: #4a3728; border: 4px solid #2b1d14; border-radius: 14px;
+    box-shadow: 0 5px 0 #1c120c, 0 8px 15px rgba(0,0,0,0.3); padding: 12px;
   }
-  .slot { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .slot { display: flex; flex-direction: column; gap: 4px; width: 100%; }
   .tool-main {
-    position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
     background: #6b4f3a; border: 3px solid #2b1d14; border-radius: 10px;
-    color: #fff8e7; font-size: 26px; padding: 8px 16px; cursor: pointer;
+    color: #fff8e7; font-size: 24px; padding: 10px 4px; cursor: pointer; width: 100%; min-height: 68px;
     box-shadow: 0 3px 0 #2b1d14; transition: transform 0.05s, background 0.15s;
   }
-  .tool-main span { font-size: 11px; font-weight: 700; }
+  .tool-main span { font-size: 11px; font-weight: 700; pointer-events: none; }
   .tool-main:active { transform: translateY(3px); box-shadow: none; }
   .tool-main.active { background: #ffd93d; color: #2b1d14; box-shadow: 0 0 0 3px #fff, 0 3px 0 #b8860b; }
   .badge {
-    position: absolute; top: -8px; right: -8px; background: #ffd93d; color: #2b1d14;
+    position: absolute; top: -6px; right: -6px; background: #ffd93d; color: #2b1d14;
     font-size: 11px; font-weight: 800; border-radius: 999px; padding: 2px 6px;
-    border: 2px solid #2b1d14; min-width: 18px; text-align: center;
+    border: 2px solid #2b1d14; min-width: 18px; text-align: center; pointer-events: none;
   }
   #goldRechargeBtn {
     background: #ffb347; color: #2b1d14; border: 2px solid #8a5a00; border-radius: 6px;
-    padding: 3px 8px; font-size: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 0 #8a5a00;
+    padding: 4px 0; font-size: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 0 #8a5a00; width: 100%; text-align: center;
   }
   #goldRechargeBtn:active { transform: translateY(2px); box-shadow: none; }
 
   #hint {
-    position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%);
+    position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
     color: #3a2a1c; font-size: 12px; font-weight: 700;
     background: rgba(255,255,255,0.85); padding: 6px 12px; border-radius: 8px; pointer-events: none;
     max-width: 90%; text-align: center; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-    transition: background 0.2s;
   }
 
+  /* 모달 레이어 */
   .overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.65); display: flex;
     align-items: center; justify-content: center; z-index: 50;
@@ -112,7 +121,7 @@
   .quizChoiceBtn {
     background: #ffd93d; border: 3px solid #b8860b; border-radius: 10px;
     font-size: 22px; font-weight: 800; padding: 12px; cursor: pointer;
-    box-shadow: 0 3px 0 #b8860b; color: #2b1d14; transition: transform 0.05s;
+    box-shadow: 0 3px 0 #b8860b; color: #2b1d14;
   }
   .quizChoiceBtn:active { transform: translateY(3px); box-shadow: none; }
   .quizChoiceBtn.shake { animation: shake 0.4s; }
@@ -141,12 +150,20 @@
     to { transform: translateY(110vh) rotate(360deg); opacity: 0.9; }
   }
 
-  @media (max-width: 760px) {
+  /* 모바일/태블릿 반응형 레이아웃 꼬임 방지 */
+  @media (max-width: 940px) {
+    html, body { overflow: auto; }
+    #game { height: auto; min-height: 100%; overflow-y: visible; }
+    #mainArea { flex-direction: column; align-items: center; }
+    #sideControlPanel { width: 100%; max-width: 680px; flex-direction: row; }
+    #missionPanel { flex: 1; }
+    #inventory { width: 240px; grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 550px) {
     #topbar .title { font-size: 14px; }
-    #topbar .counter { font-size: 11px; padding: 5px 8px; }
-    .tool-main { padding: 6px 10px; font-size: 20px; }
-    #missionPanel { width: 100%; }
-    #canvasWrap { width: 100%; height: auto; }
+    #sideControlPanel { flex-direction: column; }
+    #inventory { width: 100%; grid-template-columns: repeat(4, 1fr); }
+    #canvasWrap { width: 100%; }
     #gameCanvas { width: 100%; height: auto; }
   }
 </style>
@@ -165,28 +182,30 @@
       <canvas id="gameCanvas" width="680" height="560"></canvas>
     </div>
 
-    <div id="missionPanel">
-      <div class="missionHeader">🎯 수학 미션</div>
-      <div class="missionDesc" id="missionDesc">불러오는 중...</div>
-      <div class="missionTarget" id="missionTarget"></div>
-      <div class="missionProgress" id="missionProgress"></div>
-      <button id="skipMissionBtn">🔀 다른 미션 보기</button>
-    </div>
-  </div>
+    <div id="sideControlPanel">
+      <div id="missionPanel">
+        <div class="missionHeader">🎯 수학 미션</div>
+        <div class="missionDesc" id="missionDesc">불러오는 중...</div>
+        <div class="missionTarget" id="missionTarget"></div>
+        <div class="missionProgress" id="missionProgress"></div>
+        <button id="skipMissionBtn">🔀 다른 미션 보기</button>
+      </div>
 
-  <div id="inventory">
-    <div class="slot">
-      <button class="tool-main active" data-tool="dirt" title="흙 블록">🟫<span>흙 블록</span></button>
-    </div>
-    <div class="slot">
-      <button class="tool-main" data-tool="stone" title="석재 블록">⬜<span>석재 블록</span></button>
-    </div>
-    <div class="slot">
-      <button class="tool-main" data-tool="gold" title="황금 블록">🟨<span>황금 블록</span><span class="badge" id="goldBadge">0</span></button>
-      <button id="goldRechargeBtn">🧮 퀴즈로 충전</button>
-    </div>
-    <div class="slot">
-      <button class="tool-main" data-tool="pickaxe" title="곡괭이 (삭제)">⛏️<span>곡괭이</span></button>
+      <div id="inventory">
+        <div class="slot">
+          <button class="tool-main active" data-tool="dirt" title="흙 블록">🟫<span>흙 블록</span></button>
+        </div>
+        <div class="slot">
+          <button class="tool-main" data-tool="stone" title="석재 블록">⬜<span>석재 블록</span></button>
+        </div>
+        <div class="slot">
+          <button class="tool-main" data-tool="gold" title="황금 블록">🟨<span>황금 블록</span><span class="badge" id="goldBadge">0</span></button>
+          <button id="goldRechargeBtn">🧮 퀴즈 충전</button>
+        </div>
+        <div class="slot">
+          <button class="tool-main" data-tool="pickaxe" title="곡괭이 (삭제)">⛏️<span>곡괭이</span></button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -219,7 +238,6 @@
   const ctx = canvas.getContext('2d');
   const blockCountEl = document.getElementById('blockCount');
 
-  // ---------- 기본 설정값 ----------
   const GRID_SIZE = 8;
   const MAX_HEIGHT = 8;
   const TILE_W = 64, TILE_H = 32;
@@ -240,9 +258,8 @@
   let currentTool = 'dirt';
   let hoverCell = null;
   let goldStock = 0;
-  let currentOp = '+'; // 밸런스 패치를 위해 연산자 추적 변수 추가
+  let currentOp = '+'; 
 
-  // ---------- 좌표 변환 (아이소메트릭) ----------
   function tileApex(gx, gy, z) {
     const sx = ORIGIN_X + (gx - gy) * HALF_W;
     const sy = ORIGIN_Y + (gx + gy) * HALF_H - z * CUBE_HEIGHT;
@@ -280,7 +297,6 @@
     if (strokeColor) { ctx.strokeStyle = strokeColor; ctx.lineWidth = 1.5; ctx.stroke(); }
   }
 
-  // ---------- 렌더링 ----------
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let sum = 0; sum <= (GRID_SIZE - 1) * 2; sum++) {
@@ -343,13 +359,18 @@
     return null;
   }
 
+  // 🚀getBoundingClientRect 오차 완벽 보정 로직
   function getCanvasPos(evt) {
     const rect = canvas.getBoundingClientRect();
-    const clientX = evt.touches && evt.touches.length > 0 ? evt.touches[0].clientX : evt.clientX;
-    const clientY = evt.touches && evt.touches.length > 0 ? evt.touches[0].clientY : evt.clientY;
+    const e = (evt.touches && evt.touches.length > 0) ? evt.touches[0] : evt;
+    
+    // 스타일 상 크기와 실제 캔버스 내부 픽셀 비율 매핑 정밀화
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
     return { 
-      x: (clientX - rect.left) * (canvas.width / rect.width), 
-      y: (clientY - rect.top) * (canvas.height / rect.height) 
+      x: (e.clientX - rect.left) * scaleX, 
+      y: (e.clientY - rect.top) * scaleY 
     };
   }
 
@@ -375,7 +396,6 @@
     step();
   }
 
-  // ---------- 힌트 ----------
   const hintEl = document.getElementById('hint');
   let hintTimer = null;
   const DEFAULT_HINT = '💡 격자를 클릭해서 블록을 쌓아보세요!';
@@ -386,7 +406,6 @@
     hintTimer = setTimeout(() => { hintEl.textContent = DEFAULT_HINT; hintEl.style.background = 'rgba(255,255,255,0.85)'; }, 2400);
   }
 
-  // ---------- 도구 선택 ----------
   function selectTool(tool) {
     currentTool = tool;
     document.querySelectorAll('.tool-main').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
@@ -395,15 +414,15 @@
   function updateGoldBadge() { document.getElementById('goldBadge').textContent = goldStock; }
 
   document.querySelectorAll('.tool-main').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const tool = btn.dataset.tool;
       if (tool === 'gold' && goldStock <= 0) { openGoldQuiz(); return; }
       selectTool(tool);
     });
   });
-  document.getElementById('goldRechargeBtn').addEventListener('click', openGoldQuiz);
+  document.getElementById('goldRechargeBtn').addEventListener('click', (e) => { e.stopPropagation(); openGoldQuiz(); });
 
-  // ---------- 상호작용 ----------
   function handleClick(evt) {
     if (evt.cancelable) evt.preventDefault();
     const pos = getCanvasPos(evt);
@@ -437,14 +456,19 @@
     updateMissionProgressDisplay();
   }
 
-  // 모바일/PC 통합 이벤트 바인딩 개선
-  canvas.addEventListener('click', handleClick);
-  canvas.addEventListener('mousemove', handleMove);
+  // 🚀 마우스 및 터치 리스너의 간섭 현상 원천 차단
+  canvas.addEventListener('mousedown', (e) => { handleClick(e); });
+  canvas.addEventListener('mousemove', (e) => { handleMove(e); });
   canvas.addEventListener('mouseleave', () => { hoverCell = null; render(); });
   
   canvas.addEventListener('touchstart', (e) => { 
+    if (e.cancelable) e.preventDefault();
     handleMove(e); 
     handleClick(e);
+  }, { passive: false });
+  canvas.addEventListener('touchmove', (e) => {
+    if (e.cancelable) e.preventDefault();
+    handleMove(e);
   }, { passive: false });
 
   document.getElementById('resetBtn').addEventListener('click', () => {
@@ -453,15 +477,15 @@
   });
 
   // ============================================================
-  //  미션 시스템 (부피 판정)
+  //  미션 시스템
   // ============================================================
   const MISSIONS = [
-    { w: 2, d: 2, h: 2, label: '작은 오두막' },
-    { w: 3, d: 2, h: 2, label: '비밀 기지' },
-    { w: 2, d: 2, h: 3, label: '높은 감시탑' },
-    { w: 3, d: 3, h: 2, label: '넓은 창고' },
-    { w: 4, d: 2, h: 2, label: '긴 다리 기지' },
-    { w: 3, d: 2, h: 3, label: '튼튼한 성벽' }
+    { type: 'fixed', w: 2, d: 2, h: 2, label: '작은 오두막' },
+    { type: 'volume', targetVol: 12, label: '마법의 상자 (부피 12)' }, 
+    { type: 'fixed', w: 3, d: 2, h: 2, label: '비밀 기지' },
+    { type: 'volume', targetVol: 18, label: '거인의 보관함 (부피 18)' }, 
+    { type: 'fixed', w: 2, d: 2, h: 3, label: '높은 감시탑' },
+    { type: 'fixed', w: 3, d: 3, h: 2, label: '넓은 창고' }
   ];
   let missionIndex = 0;
   let missionLocked = false;
@@ -495,10 +519,22 @@
   function checkMissionComplete(mission) {
     const stats = getStructureStats();
     if (!stats) return false;
-    const matchNormal = stats.width === mission.w && stats.depth === mission.d;
-    const matchRotated = stats.width === mission.d && stats.depth === mission.w;
-    if (!matchNormal && !matchRotated) return false;
-    return stats.uniformHeight === mission.h;
+
+    for (let x = stats.minX; x <= stats.maxX; x++) {
+      for (let y = stats.minY; y <= stats.maxY; y++) {
+        if (grid[x][y].length !== stats.maxHeight) return false;
+      }
+    }
+
+    if (mission.type === 'fixed') {
+      const matchNormal = stats.width === mission.w && stats.depth === mission.d;
+      const matchRotated = stats.width === mission.d && stats.depth === mission.w;
+      return (matchNormal || matchRotated) && stats.maxHeight === mission.h;
+    } else if (mission.type === 'volume') {
+      const currentVol = stats.width * stats.depth * stats.maxHeight;
+      return currentVol === mission.targetVol;
+    }
+    return false;
   }
 
   function evaluateMission() {
@@ -509,24 +545,35 @@
 
   function updateMissionPanel() {
     const m = currentMission();
-    document.getElementById('missionDesc').textContent =
-      `"${m.label}" — 가로 ${m.w}칸 × 세로 ${m.d}칸 × 높이 ${m.h}칸짜리 구조물을 만들어보세요!`;
-    document.getElementById('missionTarget').innerHTML = `📐 부피 공식: ${m.w} × ${m.d} × ${m.h}<br>🎯 필요한 총 블록: <span style="color:#ffb347; font-size:16px;">${m.w * m.d * m.h}개</span>`;
+    if (m.type === 'fixed') {
+      document.getElementById('missionDesc').textContent = `"${m.label}" — 가로 ${m.w}칸 × 세로 ${m.d}칸 × 높이 ${m.h}칸 모양을 만드세요!`;
+      document.getElementById('missionTarget').innerHTML = `📐 부피 공식: ${m.w} × ${m.d} × ${m.h}<br>🎯 필요한 총 블록: <span style="color:#ffd93d; font-size:15px;">${m.w * m.d * m.h}개</span>`;
+    } else {
+      document.getElementById('missionDesc').textContent = `"${m.label}" — 부피(가로×세로×높이)가 딱 ${m.targetVol}이 되는 직육면체를 자유롭게 만드세요!`;
+      document.getElementById('missionTarget').innerHTML = `🎯 목표 부피: <span style="color:#ffb347; font-size:16px;">${m.targetVol}</span> (다양한 조합을 찾아봐요!)`;
+    }
     updateMissionProgressDisplay();
   }
 
   function updateMissionProgressDisplay() {
     const stats = getStructureStats();
     const el = document.getElementById('missionProgress');
-    if (!stats) { el.textContent = '아직 아무것도 만들지 않았어요. 격자를 클릭해서 시작해보세요!'; return; }
+    if (!stats) { el.textContent = '아직 만든 구조물이 없어요.'; return; }
+    
     const h = stats.uniformHeight === null ? `${stats.maxHeight} (울퉁불퉁)` : stats.uniformHeight;
-    const total = (() => { let t = 0; for (let x = stats.minX; x <= stats.maxX; x++) for (let y = stats.minY; y <= stats.maxY; y++) t += grid[x][y].length; return t; })();
-    el.textContent = `현재 구조: 가로 ${stats.width}칸 × 세로 ${stats.depth}칸 × 높이 ${h}칸 (${total}개 사용)`;
+    const isPerfectBox = stats.uniformHeight !== null;
+    
+    if (isPerfectBox) {
+      const currentVol = stats.width * stats.depth * stats.uniformHeight;
+      el.innerHTML = `현재 구조: 가로 ${stats.width} × 세로 ${stats.depth} × 높이 ${h}<br>▶ <span style="color:#fff;">현재 계산된 부피: ${currentVol}</span>`;
+    } else {
+      el.innerHTML = `현재 구조: 가로 ${stats.width} × 세로 ${stats.depth} × 높이 ${h}<br><span style="color:#ff5555;">(윗면을 평평하게 맞춰야 부피가 계산돼요!)</span>`;
+    }
   }
 
   function showMissionSuccess() {
     const m = currentMission();
-    document.getElementById('successSub').textContent = `"${m.label}" 미션 성공! 정말 대단한 건축가예요!`;
+    document.getElementById('successSub').textContent = `"${m.label}" 미션 성공! 수학 공간 능력이 최고예요!`;
     document.getElementById('successOverlay').classList.remove('hidden');
     launchConfetti();
   }
@@ -555,7 +602,7 @@
   }
 
   // ============================================================
-  //  황금 블록 연산 퀴즈 (수정 및 밸런스 패치 완료)
+  //  황금 블록 연산 퀴즈
   // ============================================================
   let currentQuizAnswer = null;
   function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
@@ -564,7 +611,7 @@
   function openGoldQuiz() {
     const ops = ['+', '-', '×'];
     const op = ops[rand(0, 2)];
-    currentOp = op; // 보상 정산을 위해 현재 연산 기록
+    currentOp = op; 
     let a, b, answer;
     if (op === '+') { a = rand(2, 15); b = rand(2, 15); answer = a + b; }
     else if (op === '-') { a = rand(6, 20); b = rand(1, a - 1); answer = a - b; }
@@ -601,9 +648,7 @@
   function handleQuizAnswer(val, btn) {
     const fb = document.getElementById('quizFeedback');
     if (val === currentQuizAnswer) {
-      // 💡 [버그 수정 완료] 난이도별 고정 보상 지급 (곱셈은 5개, 합/차는 3개)
       const finalReward = (currentOp === '×') ? 5 : 3;
-      
       fb.textContent = `🎉 정답이에요! 황금 블록 ${finalReward}개 획득!`;
       fb.style.color = '#2e7d32';
       goldStock += finalReward;
@@ -620,7 +665,6 @@
     }
   }
 
-  // ---------- 초기 실행 ----------
   updateCount();
   updateGoldBadge();
   updateMissionPanel();
