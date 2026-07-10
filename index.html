@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-<title>🧱 큐브 매스: 마스터 빌더 에디션 (고정밀 터치 패치)</title>
+<title>🧱 큐브 매스: 마스터 빌더 에디션 (모바일 터치 완벽 수정)</title>
 <style>
   :root {
     --bg-main: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
@@ -35,7 +35,7 @@
     background: var(--bg-main);
     font-family: var(--font-family);
     color: var(--text-light);
-    touch-action: none; /* 브라우저 기본 줌/스크롤 강제 무효화 */
+    touch-action: none;
   }
 
   #app-container {
@@ -286,7 +286,7 @@
 
 <div id="app-container">
   <header id="header-viewport">
-    <div class="brand-logo"><span>🧱</span> Jihoon's Mine Craft - 큐브 매스 1.1 <span style="font-size: 10px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; color: #fff;">PRO</span></div>
+    <div class="brand-logo"><span>🧱</span> Jihoon's Mine Craft - 큐브맥스 1.2 <span style="font-size: 10px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; color: #fff;">PRO</span></div>
     <div class="global-stats">
       <div class="stat-badge">📊 누적 블록: <span id="ui-total-blocks">0</span>개</div>
       <button id="ctrl-reset-btn" class="header-btn">🔄 전체 초기화</button>
@@ -372,7 +372,6 @@
   const GRID_SIZE = 8;
   const MAX_HEIGHT = 8;
   
-  // 💎 픽셀 정밀 단위 고정 상수
   const TILE_W = 70;         
   const TILE_H = 36;         
   const BLOCK_H = 38;        
@@ -395,7 +394,6 @@
     grid.push(new Array(GRID_SIZE).fill(null).map(() => []));
   }
 
-  // --- 🔍 제스처 및 연산 조작 컨텍스트 커널 ---
   let zoom = 1.0;
   let panX = 0;
   let panY = 0;
@@ -403,16 +401,17 @@
   let hoverTile = null;
   let goldStorage = 3;
 
-  // 🛠️ 문제 보완용 상태 메모리
   let isPointerDown = false;
-  let startX = 0, startY = 0;       // 터치다운 최초 좌표 (흔들림 측정용)
+  let startX = 0, startY = 0;       
   let prevPointerX = 0, prevPointerY = 0;
-  let isPanningAction = false;       // 데드존 돌파 후 이동 모드 활성화 여부
-  const PAN_DEADZONE = 6;            // 미세 흔들림 필터링 임계값 (6픽셀)
+  let isPanningAction = false;       
+  const PAN_DEADZONE = 8;            // 데드존 감도 약간 상향 조정 (8픽셀)
 
   let startPinchDist = 0;
   let startPinchZoom = 1.0;
-  let blockPlacementLocked = false;  // 더블 클릭 및 다중 터치 적층 가드 락 플래그
+  let blockPlacementLocked = false;  
+  let isMutationCooling = false;     // 🛠️ 가스트 클릭 방지 실시간 타이머 락 변수
+  let isTouchEventActive = false;    // 🛠️ 현재 모바일 터치 세션 구동 여부 플래그
 
   let particles = [];
   let animationFrameId = null;
@@ -433,7 +432,6 @@
     const scaleBH = BLOCK_H * zoom;
     const centerX = (canvas.width / (window.devicePixelRatio || 1)) / 2 + panX;
     const centerY = (canvas.height / (window.devicePixelRatio || 1)) / 2 - (GRID_SIZE * scaleH / 2) + (hLevel * scaleBH * 0.2) + panY;
-
     return { x: centerX + (gx - gy) * (scaleW / 2), y: centerY + (gx + gy) * (scaleH / 2) - hLevel * scaleBH };
   }
 
@@ -450,7 +448,6 @@
     return [[apex.x, apex.y + h2 * 2], [apex.x + w2, apex.y + h2], [apex.x + w2, apex.y + h2 + bh], [apex.x, apex.y + h2 * 2 + bh]];
   }
 
-  // 레이캐스팅용 점-다각형 충돌 매트릭스
   function isPointInsidePoly(polygon, x, y) {
     let collide = false;
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
@@ -529,11 +526,10 @@
     return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
   }
 
-  // --- 🖐️ 개선된 스마트 터치 및 무이탈 안전 제스처 엔진 ---
   function onPointerDownStart(clientX, clientY) {
     isPointerDown = true;
     isPanningAction = false;
-    blockPlacementLocked = false; // 배치 잠금 해제
+    blockPlacementLocked = false;
     startX = clientX;
     startY = clientY;
     prevPointerX = clientX;
@@ -542,35 +538,29 @@
 
   function onPointerMoveProcess(clientX, clientY) {
     if (!isPointerDown) return;
-
     const currentDeltaX = clientX - startX;
     const currentDeltaY = clientY - startY;
 
-    // 🛠️ 문제점 2 패치: 데드존을 넘어서야 비로소 드래그로 판정 (화면 미세흔들림 방지)
     if (!isPanningAction && (Math.abs(currentDeltaX) > PAN_DEADZONE || Math.abs(currentDeltaY) > PAN_DEADZONE)) {
       isPanningAction = true;
-      blockPlacementLocked = true; // 화면 조작이 시작되면 블록 놓기 차단
+      blockPlacementLocked = true; 
     }
 
     if (isPanningAction) {
-      const stepX = clientX - prevPointerX;
-      const stepY = clientY - prevPointerY;
-      panX += stepX;
-      panY += stepY;
-
-      // 🛠️ 문제점 1 패치: 카메라가 무한정 밖으로 탈출하는 스크롤 이탈 방지 한계선 설정
+      panX += clientX - prevPointerX;
+      panY += clientY - prevPointerY;
       const boundW = (canvas.width / (window.devicePixelRatio || 1)) * 0.7;
       const boundH = (canvas.height / (window.devicePixelRatio || 1)) * 0.7;
       panX = Math.min(Math.max(panX, -boundW), boundW);
       panY = Math.min(Math.max(panY, -boundH), boundH);
     }
-
     prevPointerX = clientX;
     prevPointerY = clientY;
   }
 
-  // 이벤트가 탈출해도 브라우저 전역 윈도우에서 트래킹하도록 마운트 바인딩 구조 개선
+  // --- 🛠️ 핑거 모바일 전용 독립 리스너 매핑 (마우스 간섭 강제 배제) ---
   canvas.addEventListener('touchstart', function(e) {
+    isTouchEventActive = true; // 터치 모드 진입 선언
     if (e.touches.length === 2) {
       isPointerDown = false;
       blockPlacementLocked = true;
@@ -581,15 +571,13 @@
       const pos = resolvePointerCoordinates(e.touches[0]);
       hoverTile = performRaycastCollision(pos.x, pos.y);
     }
+    executeRenderPipeline();
   }, { passive: true });
 
   window.addEventListener('touchmove', function(e) {
-    if (!isPointerDown && e.touches.length !== 2) return;
-    
     if (e.touches.length === 2) {
       const currentDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      const pinchFactor = currentDist / startPinchDist;
-      zoom = Math.min(Math.max(startPinchZoom * pinchFactor, 0.45), 2.5); // 배율 한계 고정
+      zoom = Math.min(Math.max(startPinchZoom * (currentDist / startPinchDist), 0.45), 2.5);
       executeRenderPipeline();
     } else if (e.touches.length === 1 && isPointerDown) {
       onPointerMoveProcess(e.touches[0].clientX, e.touches[0].clientY);
@@ -608,23 +596,28 @@
     isPointerDown = false;
     hoverTile = null;
     executeRenderPipeline();
+    // 터치 직후 마우스 이벤트 유령 방출을 막기 위해 타임아웃 뒤 플래그 반환
+    setTimeout(() => { isTouchEventActive = false; }, 350);
   }, { passive: true });
 
-  // PC 마우스 폴백 리스너 구조 개정
-  canvas.addEventListener('mousedown', function(e) { onPointerDownStart(e.clientX, e.clientY); });
+  // --- 데스크탑 전용 독립 마우스 백업 폴백 (터치 중일 땐 완벽하게 무시) ---
+  canvas.addEventListener('mousedown', function(e) { 
+    if (isTouchEventActive) return; 
+    onPointerDownStart(e.clientX, e.clientY); 
+  });
+  
   window.addEventListener('mousemove', function(e) {
+    if (isTouchEventActive) return;
+    const pos = resolvePointerCoordinates(e);
     if(isPointerDown) {
       onPointerMoveProcess(e.clientX, e.clientY);
-      const pos = resolvePointerCoordinates(e);
-      hoverTile = performRaycastCollision(pos.x, pos.y);
-      executeRenderPipeline();
-    } else {
-      const pos = resolvePointerCoordinates(e);
-      hoverTile = performRaycastCollision(pos.x, pos.y);
-      executeRenderPipeline();
     }
+    hoverTile = performRaycastCollision(pos.x, pos.y);
+    executeRenderPipeline();
   });
+  
   window.addEventListener('mouseup', function(e) {
+    if (isTouchEventActive) return;
     if (isPointerDown && !blockPlacementLocked) {
       const pos = resolvePointerCoordinates(e);
       const target = performRaycastCollision(pos.x, pos.y);
@@ -640,13 +633,15 @@
     executeRenderPipeline();
   }, { passive: false });
 
-
-  // --- 🛠️ 문제점 3 패치: Edge-Triggered 원터치 단일 인스턴스 락 기능 탑재 ---
+  // --- 🧱 더블 트리거 보안 디바운스 기능이 강화된 적층 처리기 ---
   function commitVoxelMutation(gx, gy) {
-    // 이미 락이 활성화된 트랜잭션 도중 세션이면 즉시 드롭처리
-    if (blockPlacementLocked) return;
-    blockPlacementLocked = true; // 배치 발동 즉시 세션 잠금
+    // 🛠️ 쿨다운 락이 풀리지 않았거나 배치가 이미 취소된 세션이면 탈출
+    if (blockPlacementLocked || isMutationCooling) return;
+    
+    isMutationCooling = true; // 200ms 동안 세션 완전 차단
+    setTimeout(() => { isMutationCooling = false; }, 200);
 
+    blockPlacementLocked = true; 
     const targetStack = grid[gx][gy];
 
     if (selectedTool === 'eraser') {
@@ -690,7 +685,6 @@
     systemToast.timer = setTimeout(() => { systemToast.style.opacity = '0'; systemToast.style.transform = 'translateX(-50%) translateY(0)'; }, 2000);
   }
 
-  // --- 공간 기하학 연산 매트릭스 백엔드 ---
   const MISSION_POOL = [
     { type: 'fixed', width: 2, depth: 2, height: 2, name: '큐브 오두막 짓기' },
     { type: 'volume', targetVol: 12, name: '마법 상자의 비밀 (부피 12)' },
